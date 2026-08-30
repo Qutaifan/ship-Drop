@@ -21,6 +21,17 @@
 - Competitors running ads (need 5–10):
 - Ads active 30+ days (need ≥3, proves sustained profitability):
 
+## Multi-pass Demand Screen
+- Query: "cloud shaped magnetic key holder"
+- Sampled videos: 25
+- Median views: 851
+- Max views: 4,165
+- Skeptic ratio: 8%
+- Stability: STABLE (drift: 4%)
+- Criterion 3 (Proof Burden): PASS
+- Demand Floor (Median Views ≥2,500): FAIL (near-zero content demand)
+- Pre-Screen Verdict: **FAIL**
+
 ## True Margin Matrix
 `Net Margin = (Retail / (1 + VAT)) − (Product Cost + Shipping + Import Duty) − (0.03 × Retail)`
 - Retail price target (VAT-inclusive): €19.90
@@ -57,4 +68,4 @@ Solving both gates for maximum landed cost at 19% VAT:
 - FTC dynamic pricing rule-based (not user-tracked)?:
 
 ## Verdict
-FAIL — Fails both the >€15 net margin floor (€12.12) and the ≥€20 retail floor (€19.90). Must raise retail to ≥€24.90 minimum.
+FAIL — demand floor failed (851 median views), despite low proof burden (8% skeptic ratio, stable 4% drift). Margin also fails the >€15 floor and ≥€20 retail floor. Kill candidate unless stronger external demand evidence appears.
