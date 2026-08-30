@@ -3,7 +3,7 @@
 ## Product
 - Name: Cloud-Shaped Magnetic Key Holder
 - Source/supplier candidate(s):
-- Retail price target (VAT-inclusive, as the customer pays): €19.90
+- Retail price target (VAT-inclusive, as the customer pays): €24.90
 - VAT rate (destination market, e.g. 0.19 for DE): 0.19
 - Product cost: €1.80
 - Shipping cost: €2.20
@@ -34,7 +34,7 @@
 
 ## True Margin Matrix
 `Net Margin = (Retail / (1 + VAT)) − (Product Cost + Shipping + Import Duty) − (0.03 × Retail)`
-- Retail price target (VAT-inclusive): €19.90
+- Retail price target (VAT-inclusive): €24.90
 - VAT rate: 0.19
 - Product cost: €1.80
 - Shipping cost: €2.20
@@ -42,7 +42,7 @@
 - COGS (Cost + Shipping + Duty): €4.00
 - Ex-VAT Revenue: €16.72
 - 3% Payment fee: €0.60
-- Net Margin: €12.12
+- Net Margin: €13.17
 - 3x COGS Gate (Need ≥ €12.00): PASS
 - Floor Gate (Need > €15.00): FAIL
 - Retail Floor Gate (Need ≥ €20.00): FAIL

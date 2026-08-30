@@ -41,7 +41,7 @@
 - COGS (Cost + Shipping + Duty): €7.00
 - Ex-VAT Revenue: €25.13
 - 3% Payment fee: €0.90
-- Net Margin: €17.23
+- Net Margin: €14.23
 - 3x COGS Gate (Need ≥ €21.00): FAIL
 - Floor Gate (Need > €15.00): PASS
 - Retail Floor Gate (Need ≥ €20.00): PASS
