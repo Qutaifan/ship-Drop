@@ -21,6 +21,16 @@
 - Competitors running ads (need 5–10):
 - Ads active 30+ days (need ≥3, proves sustained profitability):
 
+## Multi-pass Demand Screen
+- Query: "LED sunset projection lamp"
+- Sampled videos: 25
+- Median views: 249
+- Skeptic ratio: 32%
+- Stability: STABLE
+- Criterion 3 (Proof Burden): PASS
+- Demand Floor (Median Views ≥2,500): FAIL (near-zero content demand)
+- Pre-Screen Verdict: **FAIL**
+
 ## True Margin Matrix
 `Net Margin = (Retail / (1 + VAT)) − (Product Cost + Shipping + Import Duty) − (0.03 × Retail)`
 - Retail price target (VAT-inclusive): €29.90
@@ -57,4 +67,4 @@ Solving both gates for maximum landed cost at 19% VAT:
 - FTC dynamic pricing rule-based (not user-tracked)?:
 
 ## Verdict
-FAIL — 3x COGS gate not met. Options: raise retail to ≥€34.90 or reduce landed cost to ≤€6.06.
+FAIL — demand floor failed (249 median views) and 3x COGS gate not met. Kill candidate unless stronger external demand evidence appears.
