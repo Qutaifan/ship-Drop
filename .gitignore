@@ -1,0 +1,15 @@
+# Secrets — never commit
+.env
+*.env
+!.env.example
+infra/.env
+
+# Working artifacts
+_to_delete/
+__pycache__/
+*.pyc
+.hermes-tmp*
+
+# Large raw API dumps (regenerable; keep the analysed reports, not the payloads)
+reports/*-raw.txt
+reports/cj-direct-token-*.json

@@ -1,0 +1,94 @@
+# Hermes-Ecom storefront stack — self-hosted, free/OSS only (AGENTS.md §7).
+#
+# PREREQUISITE: the Medusa app must exist at ../medusa before this will build.
+#   npx create-medusa-app@latest medusa
+# Medusa publishes no official image by design — you build your own project.
+#
+# Bring up:  docker compose --env-file .env up -d --build
+# Exposed only to localhost; Cloudflare Tunnel provides public ingress.
+
+services:
+  postgres:
+    image: postgres:16-alpine
+    restart: unless-stopped
+    environment:
+      POSTGRES_USER: ${POSTGRES_USER}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
+      POSTGRES_DB: ${POSTGRES_DB}
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER} -d ${POSTGRES_DB}"]
+      interval: 10s
+      timeout: 5s
+      retries: 10
+
+  valkey:
+    image: valkey/valkey:8-alpine
+    restart: unless-stopped
+    command: ["valkey-server", "--save", "60", "1", "--appendonly", "no"]
+    volumes:
+      - valkeydata:/data
+    healthcheck:
+      test: ["CMD", "valkey-cli", "ping"]
+      interval: 10s
+      timeout: 5s
+      retries: 10
+
+  # PROTOCOL note: Medusa v2 requires TWO processes. The server handles HTTP;
+  # the worker handles scheduled jobs, subscribers and event processing.
+  # Running server-only silently drops background work.
+  medusa-server:
+    build: ../medusa
+    restart: unless-stopped
+    depends_on:
+      postgres: {condition: service_healthy}
+      valkey: {condition: service_healthy}
+    environment:
+      MEDUSA_WORKER_MODE: server
+      DATABASE_URL: ${DATABASE_URL}
+      REDIS_URL: ${REDIS_URL}
+      JWT_SECRET: ${JWT_SECRET}
+      COOKIE_SECRET: ${COOKIE_SECRET}
+      STORE_CORS: ${STORE_CORS}
+      ADMIN_CORS: ${ADMIN_CORS}
+      AUTH_CORS: ${AUTH_CORS}
+    ports:
+      - "127.0.0.1:9000:9000"
+
+  medusa-worker:
+    build: ../medusa
+    restart: unless-stopped
+    depends_on:
+      postgres: {condition: service_healthy}
+      valkey: {condition: service_healthy}
+    environment:
+      MEDUSA_WORKER_MODE: worker
+      DATABASE_URL: ${DATABASE_URL}
+      REDIS_URL: ${REDIS_URL}
+      JWT_SECRET: ${JWT_SECRET}
+      COOKIE_SECRET: ${COOKIE_SECRET}
+
+  umami:
+    image: ghcr.io/umami-software/umami:postgresql-latest
+    restart: unless-stopped
+    depends_on:
+      postgres: {condition: service_healthy}
+    environment:
+      DATABASE_URL: ${DATABASE_URL}
+      APP_SECRET: ${JWT_SECRET}
+    ports:
+      - "127.0.0.1:3000:3000"
+
+  uptime-kuma:
+    image: louislam/uptime-kuma:1-alpine
+    restart: unless-stopped
+    volumes:
+      - uptimekumadata:/app/data
+    ports:
+      - "127.0.0.1:3001:3001"
+
+volumes:
+  pgdata:
+  valkeydata:
+  uptimekumadata:

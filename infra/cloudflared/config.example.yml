@@ -1,0 +1,25 @@
+# Cloudflare Tunnel ingress — free tier, commercial use permitted.
+# Removes the need for port forwarding, a static IP, or purchased TLS.
+#
+# Setup:
+#   cloudflared tunnel login
+#   cloudflared tunnel create hermes-shop
+#   cloudflared tunnel route dns hermes-shop shop.example.com
+#   cloudflared tunnel --config config.yml run
+#
+# Ahmad already runs a tunnel for ollama.qutaifan.com — use a SEPARATE
+# tunnel for the storefront so an outage or credential rotation on one
+# never takes down the other.
+
+tunnel: <TUNNEL-UUID>
+credentials-file: /etc/cloudflared/<TUNNEL-UUID>.json
+
+ingress:
+  - hostname: api.example.com
+    service: http://localhost:9000
+  - hostname: shop.example.com
+    service: http://localhost:8000
+  - hostname: analytics.example.com
+    service: http://localhost:3000
+  # Firecrawl is NOT published publicly — it stays on the tailnet.
+  - service: http_status:404

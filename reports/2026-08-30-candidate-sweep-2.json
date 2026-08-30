@@ -1,0 +1,72 @@
+{
+  "magnetic spice jars": {
+    "product": "magnetic spice jars",
+    "median_duration": 103,
+    "short_form_share": 0.32,
+    "skeptic_ratio": 0.12,
+    "n_videos": 25
+  },
+  "silicone food storage bags": {
+    "product": "silicone food storage bags",
+    "median_duration": 122,
+    "short_form_share": 0.32,
+    "skeptic_ratio": 0.12,
+    "n_videos": 25
+  },
+  "magnetic knife holder": {
+    "product": "magnetic knife holder",
+    "median_duration": 128,
+    "short_form_share": 0.32,
+    "skeptic_ratio": 0.08,
+    "n_videos": 25
+  },
+  "bamboo cutting board": {
+    "product": "bamboo cutting board",
+    "median_duration": 93,
+    "short_form_share": 0.2,
+    "skeptic_ratio": 0.2,
+    "n_videos": 25
+  },
+  "adjustable laptop stand": {
+    "product": "adjustable laptop stand",
+    "median_duration": 181,
+    "short_form_share": 0.2,
+    "skeptic_ratio": 0.08,
+    "n_videos": 25
+  },
+  "folding step stool": {
+    "product": "folding step stool",
+    "median_duration": 86,
+    "short_form_share": 0.24,
+    "skeptic_ratio": 0.16,
+    "n_videos": 25
+  },
+  "under sink organizer": {
+    "product": "under sink organizer",
+    "median_duration": 84,
+    "short_form_share": 0.2,
+    "skeptic_ratio": 0.12,
+    "n_videos": 25
+  },
+  "cable clips organizer": {
+    "product": "cable clips organizer",
+    "median_duration": 111,
+    "short_form_share": 0.2,
+    "skeptic_ratio": 0.12,
+    "n_videos": 25
+  },
+  "shoe rack entryway": {
+    "product": "shoe rack entryway",
+    "median_duration": 111,
+    "short_form_share": 0.12,
+    "skeptic_ratio": 0.16,
+    "n_videos": 25
+  },
+  "wall mounted coat rack": {
+    "product": "wall mounted coat rack",
+    "median_duration": 69,
+    "short_form_share": 0.32,
+    "skeptic_ratio": 0.16,
+    "n_videos": 25
+  }
+}
