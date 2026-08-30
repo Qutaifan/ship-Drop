@@ -60,8 +60,41 @@ aspiration.
 - **WEEE + battery obligations**: electrical and battery-powered, so per-member-state WEEE registration and battery take-back duties apply. **UNPRICED — this is the largest unknown cost and must be quantified before launch.** It is a fixed recurring cost, not a per-unit one, so it does not enter the True Margin Matrix; it sets a minimum viable sales volume.
 
 ## Verdict
-PENDING — blocked on two inputs:
-1. `META_ACCESS_TOKEN` for the competitor gate.
-2. CJ per-SKU landed cost, to test against the €7.07-at-€34.90 constraint.
 
-Neither is a research task. Both require account creation.
+**FAIL — 2026-08-30, on the demand screen.**
+
+### Demand screen (re-run 2026-08-30)
+Query `"electric salt and pepper grinder set"`: median duration 101s, short-form 16%,
+skeptic ratio 28% (stable, drift 12%), **median views 358**, max 480,616.
+
+| Gate | Result |
+|---|---|
+| Criterion 3 — proof burden | PASS (28%, well under the 50% reject line) |
+| Demand floor — view count | **FAIL — near-zero content demand** |
+| Screen verdict | **FAIL** |
+
+The product demos well; almost nobody watches content about it. Under the
+zero-budget organic model that is disqualifying, because organic reach **is** the
+entire traffic strategy. A median of 358 views means the category has no audience to
+inherit — every view would have to be manufactured from nothing.
+
+Note the max of 480,616: one outlier exists, so the ceiling is not zero. But a
+power-law tail with a 358-view median is a worse bet than a category with a live
+audience, and there is no budget to buy distribution instead.
+
+### True Margin Matrix
+**Not run.** No CJ cost data was ever pulled for this product, so there are no unit
+economics to test. Running the matrix on invented costs would be fabrication.
+
+For reference, the buying constraint stands: landed cost must be <= 20.3% of
+VAT-inclusive retail, i.e. EUR 7.07 at EUR 34.90.
+
+### Standing concerns (unchanged)
+- **Criterion 5 risk**: motor plus battery. A jam or a dead cell is a return, and
+  returns on a EUR 35 item destroy the economics.
+- **WEEE and battery registration**: per-member-state fixed costs if sold into the EU.
+  Under the MENA-first zero-budget model these do not apply, which was the one point
+  in the product's favour.
+
+### Verdict
+**FAIL** on demand. Not blocked, not pending — decided.
