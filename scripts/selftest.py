@@ -147,10 +147,13 @@ def build_baseline(dst):
     w(dst, f"creative-briefs/{P}.md", BRIEF)
     w(dst, f"campaigns/{P}.md", CAMPAIGN)
     w(dst, f"learnings/2026-08-28-{P}.md", RETRO)
-    rw(dst, "learnings/HEURISTICS.md", lambda s: s.replace(
-        "| *(empty — populated by the first PROTOCOL-03 retrospective; IDs run H-001, H-002, …)* | | | | | | |",
-        "| H-001 | Problem hooks beat aspirational for desk items | PROVISIONAL | 1 | "
-        f"{P} | — | 2026-08-28 |"))
+    def update_heuristics(s):
+        target = "| *(empty — populated by the first PROTOCOL-03 retrospective; IDs run H-001, H-002, …)* | | | | | | |"
+        replacement = f"| H-001 | Problem hooks beat aspirational for desk items | PROVISIONAL | 1 | {P} | — | 2026-08-28 |"
+        if target in s:
+            return s.replace(target, replacement)
+        return re.sub(r"\|\s*H-001\s*\|[^\n]*", replacement, s, count=1)
+    rw(dst, "learnings/HEURISTICS.md", update_heuristics)
 
 
 def run(script, root):
