@@ -30,7 +30,7 @@
 - Stability: STABLE (drift: 4%)
 - Criterion 3 (Proof Burden): PASS
 - Demand Floor (Median Views ≥2,500): FAIL (near-zero content demand)
-- Pre-Screen Verdict: **FAIL**
+- Pre-Screen Verdict: FAIL
 
 ## True Margin Matrix
 `Net Margin = (Retail / (1 + VAT)) − (Product Cost + Shipping + Import Duty) − (0.03 × Retail)`
@@ -46,7 +46,7 @@
 - 3x COGS Gate (Need ≥ €12.00): PASS
 - Floor Gate (Need > €15.00): FAIL
 - Retail Floor Gate (Need ≥ €20.00): FAIL
-- Margin Matrix Verdict: **FAIL**
+- Margin Matrix Verdict: FAIL
 
 ### Buying Constraint — Maximum Landed Cost Reference
 Solving both gates for maximum landed cost at 19% VAT:
