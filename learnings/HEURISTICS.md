@@ -17,7 +17,7 @@
 
 | ID | Heuristic | Status | n | Supporting | Contradicting | Last reviewed |
 |---|---|---|---|---|---|---|
-| *(empty — populated by the first PROTOCOL-03 retrospective; IDs run H-001, H-002, …)* | | | | | | |
+| H-001 | Saturated viral novelties under €30 retail fail recent YouTube demand volume (<1,000 median views) and lack the margin buffer for paid Meta acquisition. | PROVISIONAL | 1 | LED Sunset Lamp, Portable Neck Fan, Cloud Key Holder | None | 2026-08-30 |
 
 ## Calibration Log
 
