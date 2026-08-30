@@ -21,6 +21,16 @@
 - Competitors running ads (need 5–10):
 - Ads active 30+ days (need ≥3, proves sustained profitability):
 
+## Multi-pass Demand Screen
+- Query: "portable neck fan bladeless"
+- Sampled videos: 25
+- Median views: 820
+- Skeptic ratio: 68%
+- Stability: NOISY DRIFT
+- Criterion 3 (Proof Burden): FAIL (high proof burden)
+- Demand Floor (Median Views ≥2,500): FAIL (near-zero content demand)
+- Pre-Screen Verdict: **FAIL**
+
 ## True Margin Matrix
 `Net Margin = (Retail / (1 + VAT)) − (Product Cost + Shipping + Import Duty) − (0.03 × Retail)`
 - Retail price target (VAT-inclusive): €34.90
@@ -57,4 +67,4 @@ Solving both gates for maximum landed cost at 19% VAT:
 - FTC dynamic pricing rule-based (not user-tracked)?:
 
 ## Verdict
-FAIL — 3x COGS gate not met (€20.28 < €24.00). Options: raise retail to ≥€39.90 or reduce landed cost to ≤€7.07.
+FAIL — demand floor failed (820 median views), proof burden failed (68% skeptic ratio), and 3x COGS gate not met. Kill candidate unless stronger external demand evidence appears.
