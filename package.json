@@ -4,7 +4,7 @@
   "description": "Hermes-Ecom operates in this project. Persona + protocols: see `AGENTS.md`. Portable copy-paste system prompt for other LLMs: `HERMES-PROMPT.md`.",
   "main": "index.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "python scripts/validate_phase0_schemas.py"
   },
   "repository": {
     "type": "git",

@@ -1,0 +1,171 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://dropship.local/schemas/candidate.schema.json",
+  "title": "Dropship Candidate Report Data",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "candidate_id",
+    "product_name",
+    "market_config_id",
+    "status",
+    "created_at",
+    "created_by",
+    "source_summary",
+    "competitor_evidence",
+    "supplier_evidence",
+    "demand_evidence",
+    "unit_economics",
+    "compliance_unknowns",
+    "recommendation",
+    "rationale",
+    "approval_gate"
+  ],
+  "properties": {
+    "$schema": {"type": "string"},
+    "candidate_id": {"type": "string", "pattern": "^[a-z0-9][a-z0-9_-]*$"},
+    "product_name": {"type": "string", "minLength": 1},
+    "market_config_id": {"type": "string", "pattern": "^[a-z0-9][a-z0-9_-]*$"},
+    "status": {
+      "type": "string",
+      "enum": ["DISCOVERED", "EVIDENCE_PENDING", "VALIDATION_READY", "FOUNDER_REVIEW", "REJECTED", "HOLD"]
+    },
+    "created_at": {"type": "string", "format": "date-time"},
+    "created_by": {"type": "string", "enum": ["dropship-research", "dropship-orchestrator", "manual-ahmad"]},
+    "source_summary": {"type": "string", "minLength": 1},
+    "competitor_evidence": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["source_url", "competitor_name", "observed_price", "currency", "extraction_method", "confidence"],
+        "properties": {
+          "source_url": {"type": "string", "minLength": 1},
+          "competitor_name": {"type": "string", "minLength": 1},
+          "product_url": {"type": ["string", "null"]},
+          "observed_price": {"type": "number", "minimum": 0},
+          "currency": {"type": "string", "pattern": "^[A-Z]{3}$"},
+          "extraction_method": {"type": "string"},
+          "confidence": {"type": "string", "enum": ["low", "medium", "high"]}
+        }
+      },
+      "default": []
+    },
+    "supplier_evidence": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "supplier_name",
+          "product_url",
+          "quoted_product_cost",
+          "quoted_shipping_cost",
+          "warehouse_country",
+          "delivery_days_min",
+          "delivery_days_max",
+          "hs_code",
+          "origin_country",
+          "landed_cost_confidence"
+        ],
+        "properties": {
+          "supplier_name": {"type": "string", "minLength": 1},
+          "product_url": {"type": ["string", "null"]},
+          "quoted_product_cost": {"type": ["number", "null"], "minimum": 0},
+          "quoted_shipping_cost": {"type": ["number", "null"], "minimum": 0},
+          "warehouse_country": {"type": ["string", "null"], "pattern": "^[A-Z]{2}$"},
+          "delivery_days_min": {"type": ["integer", "null"], "minimum": 1},
+          "delivery_days_max": {"type": ["integer", "null"], "minimum": 1},
+          "hs_code": {"type": ["string", "null"]},
+          "origin_country": {"type": ["string", "null"], "pattern": "^[A-Z]{2}$"},
+          "landed_cost_confidence": {"type": "string", "enum": ["low", "medium", "high"]}
+        }
+      },
+      "default": []
+    },
+    "demand_evidence": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["source", "signal_type", "metric_name", "metric_value", "confidence"],
+        "properties": {
+          "source": {"type": "string", "minLength": 1},
+          "signal_type": {"type": "string", "enum": ["search", "video", "review", "ad", "trend", "marketplace"]},
+          "metric_name": {"type": "string", "minLength": 1},
+          "metric_value": {"type": ["string", "number", "integer", "boolean"]},
+          "confidence": {"type": "string", "enum": ["low", "medium", "high"]}
+        }
+      },
+      "default": []
+    },
+    "unit_economics": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "gross_selling_price",
+        "currency",
+        "sales_tax_liability",
+        "discounts",
+        "refund_allowance",
+        "net_revenue",
+        "product_cost",
+        "shipping_cost",
+        "duty",
+        "payment_fees",
+        "packaging_cost",
+        "variable_support_cost",
+        "return_allowance",
+        "contribution_before_ads",
+        "break_even_cpa",
+        "target_cpa",
+        "safety_factor",
+        "expected_profit_per_order"
+      ],
+      "properties": {
+        "gross_selling_price": {"type": "number", "minimum": 0},
+        "currency": {"type": "string", "pattern": "^[A-Z]{3}$"},
+        "sales_tax_liability": {"type": "number", "minimum": 0},
+        "discounts": {"type": "number", "minimum": 0},
+        "refund_allowance": {"type": "number", "minimum": 0},
+        "net_revenue": {"type": "number"},
+        "product_cost": {"type": "number", "minimum": 0},
+        "shipping_cost": {"type": "number", "minimum": 0},
+        "duty": {"type": "number", "minimum": 0},
+        "payment_fees": {"type": "number", "minimum": 0},
+        "packaging_cost": {"type": "number", "minimum": 0},
+        "variable_support_cost": {"type": "number", "minimum": 0},
+        "return_allowance": {"type": "number", "minimum": 0},
+        "contribution_before_ads": {"type": "number"},
+        "break_even_cpa": {"type": "number"},
+        "target_cpa": {"type": "number"},
+        "safety_factor": {"type": "number", "minimum": 0, "maximum": 1},
+        "expected_profit_per_order": {"type": "number"}
+      }
+    },
+    "compliance_unknowns": {
+      "type": "array",
+      "items": {"type": "string"},
+      "default": []
+    },
+    "recommendation": {"type": "string", "enum": ["reject", "hold", "founder_review"]},
+    "rationale": {"type": "string", "minLength": 1},
+    "approval_gate": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["requires_ahmad_approval", "blocked_live_actions"],
+      "properties": {
+        "requires_ahmad_approval": {"type": "boolean"},
+        "blocked_live_actions": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "enum": ["ad_spend", "supplier_order_submission", "public_storefront_publish", "customer_messaging", "price_change", "new_country_launch"]
+          },
+          "minItems": 1,
+          "uniqueItems": true
+        }
+      }
+    }
+  }
+}
