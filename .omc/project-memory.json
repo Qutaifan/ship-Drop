@@ -1,0 +1,150 @@
+{
+  "version": "1.0.0",
+  "lastScanned": 1788106749374,
+  "projectRoot": "Q:\\world\\Projects\\Dropshiping",
+  "techStack": {
+    "languages": [],
+    "frameworks": [],
+    "packageManager": null,
+    "runtime": null
+  },
+  "build": {
+    "buildCommand": null,
+    "testCommand": null,
+    "lintCommand": null,
+    "devCommand": null,
+    "scripts": {}
+  },
+  "conventions": {
+    "namingStyle": null,
+    "importStyle": null,
+    "testPattern": null,
+    "fileOrganization": null
+  },
+  "structure": {
+    "isMonorepo": false,
+    "workspaces": [],
+    "mainDirectories": [
+      "scripts"
+    ],
+    "gitBranches": {
+      "defaultBranch": "main",
+      "branchingStrategy": null
+    }
+  },
+  "customNotes": [],
+  "directoryMap": {
+    "campaigns": {
+      "path": "campaigns",
+      "purpose": null,
+      "fileCount": 1,
+      "lastAccessed": 1788106749252,
+      "keyFiles": [
+        "_TEMPLATE.md"
+      ]
+    },
+    "creative-briefs": {
+      "path": "creative-briefs",
+      "purpose": null,
+      "fileCount": 1,
+      "lastAccessed": 1788106749253,
+      "keyFiles": [
+        "_TEMPLATE.md"
+      ]
+    },
+    "eCommerce-Skills": {
+      "path": "eCommerce-Skills",
+      "purpose": null,
+      "fileCount": 4,
+      "lastAccessed": 1788106749253,
+      "keyFiles": [
+        "banner.png",
+        "LICENSE",
+        "README.md"
+      ]
+    },
+    "infra": {
+      "path": "infra",
+      "purpose": null,
+      "fileCount": 5,
+      "lastAccessed": 1788106749254,
+      "keyFiles": [
+        "backup_r2.sh",
+        "docker-compose.yml",
+        "Makefile",
+        "README.md"
+      ]
+    },
+    "learnings": {
+      "path": "learnings",
+      "purpose": null,
+      "fileCount": 3,
+      "lastAccessed": 1788106749255,
+      "keyFiles": [
+        "2026-08-30-initial-product-validation.md",
+        "HEURISTICS.md",
+        "_TEMPLATE.md"
+      ]
+    },
+    "products": {
+      "path": "products",
+      "purpose": null,
+      "fileCount": 8,
+      "lastAccessed": 1788106749256,
+      "keyFiles": [
+        "bamboo-drawer-organizers.md",
+        "cable-management-box.md",
+        "cloud-key-holder.md",
+        "electric-pepper-grinder.md",
+        "folding-laundry-basket.md"
+      ]
+    },
+    "reports": {
+      "path": "reports",
+      "purpose": null,
+      "fileCount": 19,
+      "lastAccessed": 1788106749257,
+      "keyFiles": [
+        "2026-08-30-candidate-sweep-2.json",
+        "2026-08-30-candidate-sweep.md",
+        "2026-08-30-cj-mcp-cost-check.md",
+        "2026-08-30-demo-burden-screen.md",
+        "2026-08-30-leverage-and-tech.md"
+      ]
+    },
+    "scripts": {
+      "path": "scripts",
+      "purpose": "Build/utility scripts",
+      "fileCount": 13,
+      "lastAccessed": 1788106749257,
+      "keyFiles": [
+        "ad_library.py",
+        "demand_screen.py",
+        "ebay_api.py",
+        "generate_brief.py",
+        "learning_loop.py"
+      ]
+    },
+    "suppliers": {
+      "path": "suppliers",
+      "purpose": null,
+      "fileCount": 4,
+      "lastAccessed": 1788106749259,
+      "keyFiles": [
+        "cjdropshipping.md",
+        "ebay.md",
+        "temu.md",
+        "_TEMPLATE.md"
+      ]
+    },
+    "_to_delete": {
+      "path": "_to_delete",
+      "purpose": null,
+      "fileCount": 2,
+      "lastAccessed": 1788106749260,
+      "keyFiles": []
+    }
+  },
+  "hotPaths": [],
+  "userDirectives": []
+}

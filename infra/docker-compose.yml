@@ -69,6 +69,19 @@ services:
       JWT_SECRET: ${JWT_SECRET}
       COOKIE_SECRET: ${COOKIE_SECRET}
 
+  # Storefront (Next.js) — built from Medusa starter
+  storefront:
+    build: ../medusa-storefront
+    restart: unless-stopped
+    depends_on:
+      - medusa-server
+    environment:
+      NEXT_PUBLIC_MEDUSA_BACKEND_URL: ${NEXT_PUBLIC_MEDUSA_BACKEND_URL}
+      NEXT_PUBLIC_BASE_URL: ${NEXT_PUBLIC_BASE_URL}
+      MEDUSA_BACKEND_URL: ${MEDUSA_BACKEND_URL}
+    ports:
+      - "127.0.0.1:8000:8000"
+
   umami:
     image: ghcr.io/umami-software/umami:postgresql-latest
     restart: unless-stopped
@@ -77,6 +90,7 @@ services:
     environment:
       DATABASE_URL: ${DATABASE_URL}
       APP_SECRET: ${JWT_SECRET}
+      HASH_SALT: ${UMAMI_HASH_SALT}
     ports:
       - "127.0.0.1:3000:3000"
 
@@ -87,6 +101,24 @@ services:
       - uptimekumadata:/app/data
     ports:
       - "127.0.0.1:3001:3001"
+
+  # Listmonk — self-hosted email sequences (AGPL-3.0)
+  listmonk:
+    image: listmonk/listmonk:latest
+    restart: unless-stopped
+    depends_on:
+      postgres: {condition: service_healthy}
+    environment:
+      LISTMONK_DATABASE_HOST: postgres
+      LISTMONK_DATABASE_USER: ${POSTGRES_USER}
+      LISTMONK_DATABASE_PASSWORD: ${POSTGRES_PASSWORD}
+      LISTMONK_DATABASE_NAME: ${POSTGRES_DB}
+      LISTMONK_DATABASE_SSL_MODE: disable
+      LISTMONK_APP_ADMIN_USERNAME: ${LISTMONK_ADMIN_USER}
+      LISTMONK_APP_ADMIN_PASSWORD: ${LISTMONK_ADMIN_PASSWORD}
+      LISTMONK_APP_ADDRESS: 0.0.0.0:9000
+    ports:
+      - "127.0.0.1:9001:9000"
 
 volumes:
   pgdata:

@@ -24,6 +24,7 @@ Portable copy-paste system prompt for other LLMs: `HERMES-PROMPT.md`.
   - `validate_infra.py` — infra/ definitions + AGENTS/prompt parity
   - `selftest.py` — proves validators fail on bad input
   - `verify_sweep.py` — YouTube sweep arithmetic auditor
+- `eCommerce-Skills/` — shared skill library (Obsidian vault sync, agent tooling, creative templates)
 - `infra/` — Docker Compose stack, Cloudflare Tunnel config, and bootstrap steps for the self-hosted storefront
 - `_to_delete/` — build artifacts and temp files staged for removal; safe to delete by hand (this session cannot delete files on disk)
 

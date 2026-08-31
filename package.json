@@ -1,0 +1,22 @@
+{
+  "name": "dropshiping",
+  "version": "1.0.0",
+  "description": "Hermes-Ecom operates in this project. Persona + protocols: see `AGENTS.md`. Portable copy-paste system prompt for other LLMs: `HERMES-PROMPT.md`.",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Qutaifan/Dropshipping.git"
+  },
+  "keywords": [],
+  "type": "commonjs",
+  "bugs": {
+    "url": "https://github.com/Qutaifan/Dropshipping/issues"
+  },
+  "homepage": "https://github.com/Qutaifan/Dropshipping#readme",
+  "dependencies": {
+    "@playwright/test": "^1.62.1"
+  }
+}

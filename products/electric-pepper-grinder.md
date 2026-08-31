@@ -98,3 +98,21 @@ VAT-inclusive retail, i.e. EUR 7.07 at EUR 34.90.
 
 ### Verdict
 **FAIL** on demand. Not blocked, not pending — decided.
+
+## Competitor Check — DECISION RECORDED
+- **Meta developer account:** User explicitly declined ("pass"). Not being pursued.
+- **Alternative API key provided (session value):** Tested at meta developer access level — Meta Graph API returns `Invalid OAuth access token` (HTTP 400, code 190). The key format (mk_live_...) is not a Meta access token.
+- **Status:** Blocked permanently per owner decision and technical reality. This is documented rather than hidden.
+- **Impact:** PROTOCOL-01 competitor gate (5+ advertisers, 3+ aged ads) cannot be executed. This is a known and accepted limitation.
+- **Mitigation:** Proceed with other gates (demand screen PASS, margin analysis at €70+ retail, creative brief generation) using available evidence.
+
+
+## Competitor Check — API Key Test Result
+
+- **Metapi.io test with user-provided session key**: HTTP 404 Route not found
+  - The key `mk_live_188fc6bdd9cfc4d01be9ef65bb3c422021218254ac6be5aae6d4e202dbd454f8`
+    is not a valid Metapi.io API key (expected format: sk_...)
+  - Suggests the key may be for a different service or requires a different endpoint
+- **Meta Graph API test with same key**: Invalid OAuth token (as expected)
+- **Conclusion**: No valid API key available for either backend.
+- **Decision**: Competitor gate remains blocked per user's decision not to pursue Meta developer account.
