@@ -567,9 +567,751 @@ def cmd_rotate_verifications(store: Store, args: argparse.Namespace) -> None:
     store.log_audit("VERIFICATIONS_ROTATED", {"retention_days": days, "purged_count": purged, "archive_file": str(arc_file) if arc_file else None})
     if arc_file:
         print(f"  ✓ Archived {purged} record(s) to: {arc_file}")
+def cmd_sourcing_rank(store: Store, args: argparse.Namespace) -> None:
+    from agency.core.sourcing_ranker import SourcingRanker
+
+    cid = getattr(args, "candidate", None) or getattr(args, "sku", None)
+    if not cid:
+        print("❌ Error: --candidate or --sku is required.")
+        sys.exit(1)
+
+    cand = store.get_candidate(cid)
+    if not cand:
+        print(f"❌ Candidate '{cid}' not found.")
+        sys.exit(1)
+
+    verifications = store.list_supplier_verifications(candidate_id=cid)
+    res = SourcingRanker.rank_candidate_suppliers(cand, verifications=verifications, primary_metric=getattr(args, "metric", "stability_score"))
+
+    if getattr(args, "json", False):
+        print(json.dumps(res, indent=2))
+        return
+
+    print("\n" + "═" * 80)
+    print(f"  🏭 SOURCING RANKER — {cand.get('product_name')} ({cid})")
+    print(f"  Evaluation Market: {res['evaluation_market']} | Metric: {res['primary_ranking_metric']}")
+    print("═" * 80)
+    for s in res["suppliers"]:
+        c_badge = "✅ YES" if s["canary_eligible"] else "❌ NO"
+        print(f"  {s['rank']}. {s['supplier_name']:<32} | Tier: {s['tier']:<18} | Stab: {s['stability_score']:.2f} | Net: ${s['metrics']['projected_net_margin']:.2f} | Canary: {c_badge}")
+        print(f"     Landed: ${s['metrics']['landed_cost']:.2f} | Lead: {s['metrics']['lead_days_max']}d | Stock: {s['metrics']['stock_level']} | Defect: {s['metrics']['defect_rate_percent']}% | Actionability: {s['actionability_score']}")
+    print("-" * 80)
+    print(f"  Selected Supplier: {res['selected_supplier_id']} (Allocation: {res['recommended_allocation_percent']}%)")
+    print("═" * 80 + "\n")
+
+
+def cmd_sourcing_volatility(store: Store, args: argparse.Namespace) -> None:
+    from agency.bots.supplier_volatility_tracker import SupplierVolatilityTracker
+
+    sup_id = getattr(args, "supplier", None)
+    cid = getattr(args, "candidate", None)
+    if not sup_id and not cid:
+        print("❌ Error: --supplier or --candidate is required.")
+        sys.exit(1)
+
+    tracker = SupplierVolatilityTracker(store)
+    res = tracker.analyze_supplier(supplier_id=sup_id or "primary-supplier", candidate_id=cid)
+
+    if getattr(args, "json", False):
+        print(json.dumps(res, indent=2))
+        return
+
+    print("\n" + "═" * 75)
+    print(f"  📈 SUPPLIER VOLATILITY CURVES & TIMELINE: {res['supplier_id']}")
+    print("═" * 75)
+    curves = res["volatility_curves"]
+    print(f"  Stability Drift (Window)      : {curves['stability_drift']:+.3f}")
+    print(f"  Stability Volatility Index    : {curves['volatility_index']:.3f} (Threshold: 0.150)")
+    print(f"  Stock Velocity (units/audit)  : {curves['stock_velocity_units_per_audit']:+.1f}")
+    print(f"  Product Cost Drift            : {curves['price_drift_percent']:+.2f}%")
+    print(f"  Lead Time Inflation           : {curves['lead_time_inflation_days']:+d} days")
+    print("-" * 75)
+    gov = res["governance"]
+    if gov["switch_recommended"]:
+        print(f"  ⚠️ GOVERNANCE ALERT: {gov['switch_reason']}")
+        print(f"     Action: SUPPLIER_SWITCH recommended. Canary execution BLOCKED.")
     else:
-        print(f"  ✓ No records older than {days} days to rotate.")
-    print("═" * 65 + "\n")
+        print("  ✓ Telemetry stable. No governance switch needed. Canary permitted.")
+    print("-" * 75)
+    print("  Recent Timeline Points:")
+    for pt in res["timeline"][-5:]:
+        print(f"    [{pt['ts'][:19]}] Stab: {pt['stability']:.2f} | Stock: {pt['stock']:<4} | Cost: ${pt['product_cost']:.2f} | Lead: {pt['lead_days_max']}d | {pt['status']}")
+    print("═" * 75 + "\n")
+
+
+def cmd_sourcing_lifecycle(store: Store, args: argparse.Namespace) -> None:
+    from agency.bots.supplier_volatility_tracker import SupplierVolatilityTracker
+    from agency.core.supplier_lifecycle import SupplierLifecycleManager
+
+    sup_id = getattr(args, "supplier", None)
+    cid = getattr(args, "candidate", None)
+    tracker = SupplierVolatilityTracker(store)
+    vol = tracker.analyze_supplier(supplier_id=sup_id or "primary-supplier", candidate_id=cid)
+    stab = vol["latest_metrics"]["stability"]
+    v_idx = vol["volatility_curves"]["volatility_index"]
+
+    res = SupplierLifecycleManager.evaluate_state(stability_score=stab, volatility_index=v_idx)
+    if getattr(args, "json", False):
+        print(json.dumps(res, indent=2))
+        return
+
+    print("\n" + "═" * 75)
+    print(f"  🏷️ SUPPLIER LIFECYCLE STATE: {vol['supplier_id']}")
+    print("═" * 75)
+    print(f"  Operational State    : {res['state']}")
+    print(f"  Stability Score      : {stab:.2f}")
+    print(f"  Volatility Index     : {v_idx:.3f}")
+    print(f"  Canary Permitted     : {'✅ YES' if res['canary_permitted'] else '❌ BLOCKED'}")
+    print(f"  Replacement Required : {'⚠️ YES' if res['replacement_required'] else '✓ NO'}")
+    print(f"  Diagnostic Reason    : {res['reason']}")
+    print("═" * 75 + "\n")
+
+
+def cmd_sourcing_forecast(store: Store, args: argparse.Namespace) -> None:
+    from agency.bots.supplier_volatility_tracker import SupplierVolatilityTracker
+    from agency.core.supplier_forecasting import SupplierHealthForecaster
+
+    sup_id = getattr(args, "supplier", None)
+    cid = getattr(args, "candidate", None)
+    tracker = SupplierVolatilityTracker(store)
+    vol = tracker.analyze_supplier(supplier_id=sup_id or "primary-supplier", candidate_id=cid)
+    res = SupplierHealthForecaster.forecast_health(vol.get("timeline", []))
+
+    if getattr(args, "json", False):
+        print(json.dumps(res, indent=2))
+        return
+
+    print("\n" + "═" * 75)
+    print(f"  🔮 SUPPLIER HEALTH FORECAST: {vol['supplier_id']}")
+    print("═" * 75)
+    curr = res.get("current_metrics", {})
+    p7d = res.get("projected_7d", {})
+    print(f"  Current Stability    : {curr.get('stability', 0):.2f}  ──▶  7-Day Projection : {p7d.get('stability', 0):.2f}")
+    print(f"  Current Stock Depth  : {curr.get('stock', 0):<4}  ──▶  Runout Forecast  : {p7d.get('stock_runout_days', 999)} day(s)")
+    print(f"  Current Lead Time    : {curr.get('lead_days', 5)}d   ──▶  Lead Trajectory  : {p7d.get('lead_days_max', 5)}d")
+    print(f"  Price Acceleration   : {p7d.get('price_acceleration_percent', 0.0):+.2f}% per week")
+    print(f"  Forecast Risk Tier   : {res.get('risk_tier')}")
+    if res.get("preemptive_switch_recommended"):
+        print("  ⚠️ PREEMPTIVE SWITCH RECOMMENDED:")
+        for r in res.get("preemptive_switch_reasons", []):
+            print(f"     - {r}")
+    else:
+        print("  ✓ Forecast trajectories safe. No preemptive failover indicated.")
+    print("═" * 75 + "\n")
+
+
+def cmd_sourcing_matrix(store: Store, args: argparse.Namespace) -> None:
+    from agency.core.competition_matrix import SupplierCompetitionMatrix
+
+    cid = getattr(args, "candidate", None) or getattr(args, "sku", None)
+    if not cid:
+        print("❌ Error: --candidate or --sku is required.")
+        sys.exit(1)
+
+    matrix = SupplierCompetitionMatrix.generate_matrix(candidate_id=cid, store=store)
+    if getattr(args, "json", False):
+        print(json.dumps(matrix, indent=2))
+        return
+
+    print("\n" + "═" * 90)
+    print(f"  📊 SKU SUPPLIER COMPETITION MATRIX — {matrix.get('product_name')} ({cid})")
+    print(f"  Allocation Strategy: {matrix.get('allocation_strategy')} | Suppliers Audited: {matrix.get('supplier_count')}")
+    print("═" * 90)
+    for row in matrix.get("competition_matrix", []):
+        c_badge = "✅" if row["canary_eligible"] else "❌"
+        print(f"  {row['rank']}. {row['supplier_name']:<30} | State: {row['lifecycle_state']:<10} | Alloc: {row['allocation_percent']:>4.1f}% | Stab: {row['stability_score']:.2f} (7d: {row['projected_7d_stability']:.2f})")
+        print(f"     Landed: ${row['landed_cost']:.2f} | Net: ${row['projected_net_margin']:.2f} | Runout: {row['stock_runout_days']}d | Defect: {row['defect_rate_percent']}% | Canary: {c_badge}")
+    print("═" * 90 + "\n")
+
+
+def cmd_sourcing_predict_drift(store: Store, args: argparse.Namespace) -> None:
+    from agency.bots.supplier_volatility_tracker import SupplierVolatilityTracker
+    from agency.core.predictive_drift import PredictiveDriftEngine
+
+    sup_id = getattr(args, "supplier", None)
+    cid = getattr(args, "candidate", None)
+    tracker = SupplierVolatilityTracker(store)
+    vol = tracker.analyze_supplier(supplier_id=sup_id or "primary-supplier", candidate_id=cid)
+    timeline = vol.get("timeline", [])
+
+    stabs = [float(p.get("stability", 0.9)) for p in timeline]
+    stocks = [int(p.get("stock", 100)) for p in timeline]
+    costs = [float(p.get("product_cost", 10.0)) for p in timeline]
+    defects = [1.2 for _ in timeline]
+
+    res = PredictiveDriftEngine.evaluate_predictive_drift(stabs, stocks, costs, defects)
+    if getattr(args, "json", False):
+        print(json.dumps(res, indent=2))
+        return
+
+    print("\n" + "═" * 75)
+    print(f"  ⚡ PREDICTIVE DRIFT FORECAST: {vol['supplier_id']}")
+    print("═" * 75)
+    print(f"  Predictive Drift Score     : {res['predictive_drift_score']}/100")
+    print(f"  Risk Tier                  : {res['risk_tier']}")
+    print(f"  Stability Collapse Prob    : {res['collapse_probability']:.1%}")
+    print(f"  7-Day Projected Stability  : {res['projected_stability_7d']:.2f}")
+    print(f"  Stockout Runout Horizon    : {res['stockout_horizon_days']} day(s)")
+    print(f"  Cost Inflation Velocity    : {res['cost_inflation_weekly_percent']:+.2f}% / week")
+    print(f"  Action Recommendation      : {res['action_recommendation']}")
+    print("-" * 75)
+    for r in res.get("reasons", []):
+        print(f"  - {r}")
+    print("═" * 75 + "\n")
+
+
+def cmd_sourcing_reputation(store: Store, args: argparse.Namespace) -> None:
+    from agency.core.reputation_graph import SupplierReputationGraph
+
+    graph_engine = SupplierReputationGraph(store)
+    sup_id = getattr(args, "supplier", None)
+
+    if sup_id:
+        risk = graph_engine.assess_systemic_risk(sup_id)
+        if getattr(args, "json", False):
+            print(json.dumps(risk, indent=2))
+            return
+        print("\n" + "═" * 75)
+        print(f"  🌐 SUPPLIER SYSTEMIC RISK & REPUTATION: {sup_id}")
+        print("═" * 75)
+        print(f"  Stability Score      : {risk.get('stability_score', 0):.2f}")
+        print(f"  Portfolio Exposure   : {risk.get('portfolio_exposure_percent', 0):.1f}% of catalog")
+        print(f"  Affected SKU Count   : {risk.get('affected_sku_count', 0)}")
+        print(f"  Systemic Risk Level  : {risk.get('systemic_risk_level')}")
+        print(f"  Recommended Action   : {risk.get('recommended_action')}")
+        if risk.get("affected_skus"):
+            print(f"  Connected SKUs       : {', '.join(risk.get('affected_skus'))}")
+        print("═" * 75 + "\n")
+        return
+
+    g = graph_engine.build_network_graph()
+    if getattr(args, "json", False):
+        print(json.dumps(g, indent=2))
+        return
+
+    summary = g["systemic_summary"]
+    print("\n" + "═" * 75)
+    print("  🌐 SUPPLIER & LOGISTICS REPUTATION GRAPH")
+    print("═" * 75)
+    print(f"  Graph Topology       : {g['node_count']} Nodes | {g['edge_count']} Edges")
+    print(f"  Active SKUs          : {summary['total_skus']}")
+    print(f"  Sourcing Partners    : {summary['total_suppliers']}")
+    print(f"  Fulfillment Hubs     : {summary['total_warehouses']}")
+    print(f"  Carrier Networks     : {summary['total_carriers']}")
+    print("-" * 75)
+    print("  Supplier Hubs:")
+    for k, v in g["nodes"].items():
+        if v["type"] == "SUPPLIER":
+            print(f"    - {v['label']:<32} | Exposure: {v['systemic_exposure_percent']:>4.1f}% | SKUs: {v['sku_count']} | Stab: {v['stability_score']:.2f}")
+    print("═" * 75 + "\n")
+
+
+def cmd_sourcing_rebalance(store: Store, args: argparse.Namespace) -> None:
+    from agency.bots.portfolio_rebalancer import PortfolioRebalancer
+
+    sup_id = getattr(args, "supplier", None)
+    if not sup_id:
+        print("❌ Error: --supplier is required.")
+        sys.exit(1)
+
+    reason = getattr(args, "reason", "Autonomous drift mitigation")
+    rebalancer = PortfolioRebalancer(store)
+    res = rebalancer.rebalance_supplier(sup_id, reason=reason)
+
+    if getattr(args, "json", False):
+        print(json.dumps(res, indent=2))
+        return
+
+    print("\n" + "═" * 80)
+    print(f"  🔄 MULTI-SKU PORTFOLIO REBALANCING BATCH: {sup_id}")
+    print("═" * 80)
+    print(f"  Batch ID             : {res.get('batch_id')}")
+    print(f"  Affected SKUs        : {res.get('affected_sku_count')}")
+    print(f"  Switches Rerouted    : {res.get('successful_switches')}")
+    print(f"  Emergency Pauses     : {res.get('emergency_pauses')}")
+    print(f"  Net Margin Delta     : ${res.get('net_portfolio_margin_delta', 0.0):+.2f}")
+    print(f"  Summary              : {res.get('summary')}")
+    print("-" * 80)
+    for s in res.get("sku_details", []):
+        print(f"    - {s['candidate_id']:<35} ──▶ Status: {s['status']:<15} (Signal: {s.get('signal_id', 'N/A')})")
+    print("═" * 80 + "\n")
+
+
+def cmd_governance_window(store: Store, args: argparse.Namespace) -> None:
+    from agency.governance.autonomous_windows import AutonomousWindowManager
+
+    mgr = AutonomousWindowManager(store)
+    sub = getattr(args, "subaction", "list")
+
+    if sub == "grant":
+        hrs = getattr(args, "hours", 2.0)
+        cap = getattr(args, "cap", 500.0)
+        actor = getattr(args, "actor", "Founder")
+        win = mgr.grant_window(founder_actor=actor, duration_hours=hrs, spend_cap=cap)
+        print("\n" + "═" * 75)
+        print("  🔐 AUTONOMOUS EXECUTION WINDOW GRANTED")
+        print("═" * 75)
+        print(f"  Window ID            : {win['window_id']}")
+        print(f"  Authorized By        : {win['authorized_by']}")
+        print(f"  Duration             : {win['duration_hours']} hour(s)")
+        print(f"  Spend Cap            : ${win['spend_cap']:.2f}")
+        print(f"  Expires At (UTC)     : {win['expires_at']}")
+        print(f"  Cryptographic Token  : {win['cryptographic_token'][:16]}...")
+        print("═" * 75 + "\n")
+
+    elif sub == "revoke":
+        win_id = getattr(args, "id", None)
+        if not win_id:
+            print("❌ Error: --id is required to revoke window.")
+            sys.exit(1)
+        ok = mgr.revoke_window(win_id)
+        if ok:
+            print(f"\n🛑 Window {win_id} REVOKED immediately.\n")
+        else:
+            print(f"\n❌ Window {win_id} not found.\n")
+
+    else:
+        # List windows
+        windows_file = ROOT / "config" / "autonomous_windows.json"
+        if windows_file.exists():
+            with windows_file.open("r", encoding="utf-8") as f:
+                data = json.load(f)
+        else:
+            data = {"active_windows": []}
+
+        print("\n" + "═" * 80)
+        print("  🔐 ACTIVE AUTONOMOUS EXECUTION WINDOWS")
+        print("═" * 80)
+        wins = data.get("active_windows", [])
+        if not wins:
+            print("  (No autonomous execution windows currently active)")
+        for w in wins:
+            print(f"  ID: {w['window_id']} | Status: {w['status']:<8} | Cap: ${w['spend_cap']:.2f} | Consumed: ${w.get('consumed_spend', 0.0):.2f}")
+            print(f"      Expires: {w['expires_at']} | Actor: {w['authorized_by']}")
+        print("═" * 80 + "\n")
+
+
+def cmd_pricing_optimize(store: Store, args: argparse.Namespace) -> None:
+    from agency.core.dynamic_pricing import DynamicPricingEngine
+
+    cid = getattr(args, "candidate", None) or getattr(args, "sku", None)
+    if not cid:
+        print("❌ Error: --candidate or --sku is required.")
+        sys.exit(1)
+
+    cand = store.get_candidate(cid)
+    if not cand:
+        print(f"❌ Error: Candidate {cid} not found.")
+        sys.exit(1)
+
+    econ = cand.get("unit_economics", {})
+    retail = float(econ.get("gross_selling_price", 79.99))
+    landed = float(econ.get("product_cost", 10.0)) + float(econ.get("shipping_cost", 4.0))
+    stock = 250
+    elast = getattr(args, "elasticity", 1.6)
+
+    comp_evidence = cand.get("competitor_evidence", [])
+    comp_prices = [float(e["observed_price"]) for e in comp_evidence if e.get("observed_price")]
+    comp_price = sorted(comp_prices)[len(comp_prices) // 2] if comp_prices else getattr(args, "competitor", None)
+
+    res = DynamicPricingEngine.optimize_price(
+        current_retail=retail,
+        landed_cost=landed,
+        stock_depth=stock,
+        elasticity_coefficient=elast,
+        competitor_price=comp_price,
+    )
+    if getattr(args, "json", False):
+        print(json.dumps(res, indent=2))
+        return
+
+    if getattr(args, "save", False):
+        if "unit_economics" not in cand:
+            cand["unit_economics"] = {}
+        cand["unit_economics"]["gross_selling_price"] = res["recommended_retail"]
+        cand["unit_economics"]["contribution_before_ads"] = res["projected_unit_margin"]
+        cand["unit_economics"]["expected_profit_per_order"] = res["projected_unit_margin"]
+        store.save_candidate(cand)
+        print(f"  ✓ Saved optimized retail ${res['recommended_retail']:.2f} into candidate economics.")
+
+    print("\n" + "═" * 75)
+    print(f"  🏷️ DYNAMIC PRICING OPTIMIZATION: {cand.get('product_name')} ({cid})")
+    print("═" * 75)
+    print(f"  Current Retail Price : ${res['current_retail']:.2f}")
+    print(f"  Optimized Retail     : ${res['recommended_retail']:.2f} (Delta: {res['price_delta']:+.2f})")
+    print(f"  Projected Unit Margin: ${res['projected_unit_margin']:.2f} ({res['cogs_multiple']:.1f}x COGS)")
+    print(f"  Margin Expansion     : {res['margin_lift_percent']:+.1f}%")
+    print(f"  Demand Multiplier    : {res['elasticity_demand_ratio']:.2f}x baseline")
+    if comp_price:
+        print(f"  Competitor Anchor    : ${comp_price:.2f} (from Meta DSA ads)")
+    print(f"  CAC Gate Cleared     : {'✅ YES' if res['cac_gate_cleared'] else '❌ NO'}")
+    print("  FTC Rule Safeguard   : Non-profiling, inventory/elasticity rule-based")
+    print("-" * 75)
+    print(f"  Strategy: {res['optimization_rule']}")
+    print("═" * 75 + "\n")
+
+
+def cmd_dsa_ingest(store: Store, args: argparse.Namespace) -> None:
+    from agency.ingestion.dsa_ad_ingestion import DSAAdIngestionPipeline
+
+    cid = getattr(args, "candidate", None) or getattr(args, "sku", "cand-temp")
+    query = getattr(args, "query", None)
+    if not query:
+        cand = store.get_candidate(cid)
+        query = cand.get("product_name") if cand else cid
+
+    countries = [c.strip() for c in getattr(args, "countries", "DE,FR,NL").split(",")]
+    res = DSAAdIngestionPipeline.ingest_for_candidate(candidate_id=cid, query=query, countries=countries)
+
+    if getattr(args, "save", False):
+        cand = store.get_candidate(cid)
+        if cand:
+            cand["competitor_evidence"] = res["competitor_evidence"]
+            store.save_candidate(cand)
+            print(f"  ✓ Saved {len(res['competitor_evidence'])} competitor ad evidence items into candidate {cid}.")
+
+    if getattr(args, "json", False):
+        print(json.dumps(res, indent=2))
+        return
+
+    print("\n" + "═" * 80)
+    print(f"  🔍 META AD LIBRARY DSA COMMERCIAL AD INGESTION: {query}")
+    print(f"  Candidate ID: {cid} | Target Markets: {','.join(countries)}")
+    print("═" * 80)
+    print(f"  DSA Protocol Verdict : {res['dsa_protocol_verdict']}")
+    print(f"  Market Saturation    : {res['saturation_status']}")
+    print(f"  Distinct Advertisers : {res['distinct_advertisers']} (Min required: 5)")
+    print(f"  Total Active Ads     : {res['total_active_ads']}")
+    print(f"  Sustained (30d+) Ads : {res['sustained_30d_ads']} (Min required: 3)")
+    print(f"  Median Competitor Prc: €{res['median_competitor_price']:.2f}")
+    print(f"  DSA Demand Multiplier: {res['dsa_demand_multiplier']}x")
+    print(f"  Competitive Pressure : {res['demand_side_pressure_score']}/100")
+    print("-" * 80)
+    print("  Competitor Creatives Extracted:")
+    for ad in res["competitor_evidence"][:5]:
+        print(f"    - {ad['competitor_name'][:28]:<28} | Observed: €{ad['observed_price']:.2f} | Conf: {ad['confidence']}")
+    print("═" * 80 + "\n")
+
+
+def cmd_cj_ingest(store: Store, args: argparse.Namespace) -> None:
+    from agency.ingestion.cj_inventory_ingestion import CJInventoryIngestionPipeline
+
+    sup_id = getattr(args, "supplier", "cj-dropshipping-us-domestic-hub")
+    sku = getattr(args, "sku", "SKU-MAGNETIC-01")
+    cid = getattr(args, "candidate", None) or "cand-cj-sku-magnetic-cord-6p"
+    cost = getattr(args, "cost", None)
+    stock = getattr(args, "stock", None)
+    lead = getattr(args, "lead", None)
+
+    rec = CJInventoryIngestionPipeline.ingest_and_verify(
+        candidate_id=cid,
+        supplier_id=sup_id,
+        sku=sku,
+        override_stock=stock,
+        override_lead_max=lead,
+        override_product_cost=cost,
+    )
+
+    if getattr(args, "save", False):
+        store.save_supplier_verification(rec)
+        print(f"  ✓ Saved verified CJ telemetry {rec['verification_id']} into database.")
+
+    if getattr(args, "json", False):
+        print(json.dumps(rec, indent=2))
+        return
+
+    print("\n" + "═" * 80)
+    print(f"  📦 CJDROPSHIPPING LIVE DOMESTIC WAREHOUSE TELEMETRY: {sup_id}")
+    print(f"  SKU: {sku} | Candidate: {cid} | Verification ID: {rec['verification_id']}")
+    print("═" * 80)
+    print(f"  Warehouse Origin     : {rec['warehouse_country']} ({rec['warehouse_type']})")
+    print(f"  Shipping Route       : {rec['shipping_method']} (Delivery: {rec['lead_days_min']}-{rec['lead_days_max']} days)")
+    print(f"  Live Stock Level     : {rec['stock_level']} units")
+    print(f"  Verified Unit Cost   : ${rec['verified_product_cost']:.2f} (Quoted: ${rec['quoted_product_cost']:.2f} | Drift: {rec['price_drift_percent']:+.1%})")
+    print(f"  Verified Freight Cost: ${rec['verified_shipping_cost']:.2f} (Import Duty: {rec['duty_percent']}%)")
+    print(f"  Stability Score      : {rec['stability_score']:.2f} / 1.00")
+    print(f"  Audit Status         : {rec['status']}")
+    print(f"  HMAC Provenance Sig  : {rec['hmac_signature'][:16]}...")
+    print("═" * 80 + "\n")
+
+
+def cmd_ui_serve(store: Store, args: argparse.Namespace) -> None:
+    from agency.api.server import run_hermes_api_server
+
+    port = getattr(args, "port", 8080)
+    host = getattr(args, "host", "127.0.0.1")
+    run_hermes_api_server(host=host, port=port)
+
+
+def cmd_buyer_simulate(store: Store, args: argparse.Namespace) -> None:
+    from agency.bots.fake_buyer_journey import FakeBuyerJourneySimulator
+
+    cid = getattr(args, "candidate", None) or "cand-cj-sku-magnetic-cord-6p"
+    cust = getattr(args, "customer", "Marcus Vance (Synthetic Buyer)")
+    country = getattr(args, "country", "US")
+
+    sim = FakeBuyerJourneySimulator(store)
+    res = sim.simulate_order(candidate_id=cid, customer_name=cust, customer_country=country)
+
+    if getattr(args, "json", False):
+        print(json.dumps(res, indent=2))
+        return
+
+    print("\n" + "═" * 80)
+    print(f"  🛒 AUTONOMOUS BUYER JOURNEY REPLAY: {res['order_id']}")
+    print(f"  Customer: {res['customer_name']} ({res['customer_country']}) | SKU: {res['candidate_id']}")
+    print("═" * 80)
+    for idx, step in enumerate(res["steps"], start=1):
+        print(f"  {idx}. [{step['action']}]")
+        print(f"     {step['details']}")
+        print(f"     Timestamp: {step['timestamp']} | HMAC: {step['hmac_signature'][:16]}...")
+        print("-" * 80)
+
+    econ = res["unit_economics"]
+    print("  📊 UNIT P&L RECONCILIATION:")
+    print(f"     Gross Retail Captured : ${econ['gross_retail']:.2f}")
+    print(f"     Stripe Processing Fee : -${econ['payment_fee']:.2f}")
+    print(f"     Landed Sourcing COGS  : -${econ['landed_cogs']:.2f}")
+    print(f"     Net Operating Profit  : +${econ['net_profit']:.2f} ({econ['cogs_multiple']}x COGS)")
+    print(f"     CAC Gate Cleared (>=$42.96): {'✅ PASS' if econ['cac_gate_cleared'] else '❌ FAIL'}")
+    print(f"     USPS Tracking Number  : {res['carrier_tracking']}")
+    print("═" * 80 + "\n")
+
+
+def cmd_medusa_sync(store: Store, args: argparse.Namespace) -> None:
+    from agency.ingestion.medusa_storefront_sync import MedusaStorefrontSync
+
+    cid = getattr(args, "candidate", None) or "cand-cj-sku-magnetic-cord-6p"
+    publish = getattr(args, "publish", False)
+    dry_run = getattr(args, "dry_run", False)
+
+    sync_engine = MedusaStorefrontSync(store)
+    res = sync_engine.sync_candidate(candidate_id=cid, publish=publish, dry_run=dry_run)
+
+    if getattr(args, "json", False):
+        print(json.dumps(res, indent=2))
+        return
+
+    print("\n" + "═" * 80)
+    print(f"  🛍️ MEDUSA V2 STOREFRONT CATALOG SYNCHRONIZATION")
+    print(f"  Candidate ID: {cid} | Status: {res['status']}")
+    print("═" * 80)
+    if res.get("status") == "DRY_RUN":
+        p = res["payload"]
+        print("  Mode: DRY RUN (Preview Only)")
+        print(f"  Handle               : {p['handle']}")
+        print(f"  Title                : {p['title']}")
+        print(f"  Status               : {p['status']}")
+        print(f"  USD Price (Cents)    : {p['variants'][0]['prices'][0]['amount']} (${p['variants'][0]['prices'][0]['amount']/100:.2f})")
+        print(f"  Stock Inventory      : {p['variants'][0]['inventory_quantity']} units")
+        print(f"  EU AI Act Notice     : Attached in description")
+    else:
+        print(f"  Medusa Product ID    : {res['medusa_product_id']}")
+        print(f"  Product Handle (URL) : /{res['handle']}")
+        print(f"  Synchronized Retail  : ${res['retail_price_usd']:.2f}")
+        print(f"  Synchronized Stock   : {res['stock_inventory']} units (Verified Domestic)")
+        print(f"  Storefront State     : {res['listing_status'].upper()}")
+        print(f"  Local Catalog Export : {res['local_catalog_export']}")
+        print(f"  Remote Medusa Backend: {'CONNECTED' if res['remote_api_connected'] else 'LOCAL_EXPORT_READY'}")
+        print(f"  HMAC Provenance Sig  : {res['hmac_provenance'][:16]}...")
+    print("═" * 80 + "\n")
+
+
+def cmd_stripe_webhook(store: Store, args: argparse.Namespace) -> None:
+    from agency.ingestion.stripe_telemetry_ingestion import StripeTelemetryIngestion
+
+    cid = getattr(args, "candidate", "cand-cj-sku-magnetic-cord-6p")
+    amount = getattr(args, "amount", 62.99)
+    event_type = getattr(args, "event_type", "checkout.session.completed")
+
+    # Synthesize a test event payload
+    test_event = {
+        "type": event_type,
+        "data": {
+            "object": {
+                "id": f"cs_test_hermes_{cid[-8:]}",
+                "amount_total": int(round(amount * 100)),
+                "currency": "usd",
+                "payment_status": "paid",
+                "metadata": {"candidate_id": cid, "sku": "SKU-MAGNETIC-01"},
+                "customer_details": {"address": {"country": "US"}},
+            }
+        },
+    }
+
+    engine = StripeTelemetryIngestion(store)
+    res = engine.process_event(test_event)
+
+    if getattr(args, "json", False):
+        print(json.dumps(res, indent=2))
+        return
+
+    print("\n" + "═" * 80)
+    print(f"  💳 STRIPE SANDBOX WEBHOOK PROCESSED")
+    print(f"  Event: {res['event_type']} | Status: {res['status']}")
+    print("═" * 80)
+    if res["status"] == "RECONCILED":
+        print(f"  Session ID           : {res['session_id']}")
+        print(f"  Candidate ID         : {res['candidate_id']}")
+        print(f"  Gross Revenue        : ${res['gross_revenue']:.2f}")
+        print(f"  Stripe Fee (2.9%+30c): -${res['stripe_fee']:.2f}")
+        print(f"  Net Proceeds         : +${res['net_proceeds']:.2f}")
+    elif res["status"] == "CAPTURED":
+        print(f"  Payment Intent ID    : {res['payment_intent_id']}")
+        print(f"  Amount Captured      : ${res['amount']:.2f}")
+    else:
+        print(f"  Message: {res.get('message', 'N/A')}")
+    print("═" * 80 + "\n")
+
+
+def cmd_umami_event(store: Store, args: argparse.Namespace) -> None:
+    from agency.ingestion.umami_telemetry_ingestion import UmamiTelemetryIngestion
+
+    cid = getattr(args, "candidate", "cand-cj-sku-magnetic-cord-6p")
+    event_type = getattr(args, "event_type", "pageview")
+    price = getattr(args, "price", 62.99)
+    count = getattr(args, "count", 1)
+
+    engine = UmamiTelemetryIngestion(store)
+    res = None
+    for _ in range(count):
+        res = engine.record_event(candidate_id=cid, event_type=event_type, price_point=price)
+
+    if getattr(args, "json", False):
+        print(json.dumps(res, indent=2))
+        return
+
+    print("\n" + "═" * 80)
+    print(f"  📊 UMAMI COOKIELESS CONVERSION FUNNEL: {cid}")
+    print("═" * 80)
+    print(f"  Pageviews            : {res['pageviews']}")
+    print(f"  Checkout Started     : {res['checkout_started']}")
+    print(f"  Checkout Completed   : {res['checkout_completed']}")
+    print(f"  Initiation Rate      : {res['checkout_initiation_rate_percent']}%")
+    print(f"  Real CVR             : {res['real_conversion_rate_percent']}%")
+    print(f"  Profit per Visitor   : ${res['profit_per_visitor_usd']:.2f}")
+    print(f"  Empirical Elasticity : {res['empirical_elasticity_coefficient']}")
+    if res.get("price_cohorts"):
+        print("  ─── Price Cohort Performance ───")
+        for p, c in sorted(res["price_cohorts"].items()):
+            cvr = round((c["conversions"] / max(1, c["views"])) * 100, 2)
+            print(f"    ${p} → {c['views']} views, {c['conversions']} conversions ({cvr}% CVR)")
+    print("═" * 80 + "\n")
+
+
+def cmd_conversion_summary(store: Store, args: argparse.Namespace) -> None:
+    from agency.ingestion.umami_telemetry_ingestion import UmamiTelemetryIngestion
+
+    cid = getattr(args, "candidate", "cand-cj-sku-magnetic-cord-6p")
+    res = UmamiTelemetryIngestion(store).get_sku_funnel_summary(cid)
+
+    if getattr(args, "json", False):
+        print(json.dumps(res, indent=2))
+        return
+
+    print("\n" + "═" * 80)
+    print(f"  📈 LIVE CONVERSION & ELASTICITY DASHBOARD: {cid}")
+    print("═" * 80)
+    print(f"  Sessions (Pageviews) : {res['pageviews']}")
+    print(f"  Checkout Initiated   : {res['checkout_started']} ({res['checkout_initiation_rate_percent']}%)")
+    print(f"  Orders Completed     : {res['checkout_completed']} ({res['real_conversion_rate_percent']}% CVR)")
+    print(f"  Profit per Visitor   : ${res['profit_per_visitor_usd']:.2f}")
+    print(f"  Elasticity (ε)       : {res['empirical_elasticity_coefficient']}")
+    print("═" * 80 + "\n")
+
+
+def cmd_demand_forecast(store: Store, args: argparse.Namespace) -> None:
+    from agency.core.demand_forecasting import DemandForecastingEngine
+
+    cid = getattr(args, "candidate", None) or getattr(args, "sku", None)
+    spend = getattr(args, "spend", 50.0)
+    cpc = getattr(args, "cpc", 0.85)
+    cvr = getattr(args, "cvr", 2.2)
+
+    res = DemandForecastingEngine.forecast_demand(daily_ad_spend=spend, cpc=cpc, predicted_cvr_percent=cvr)
+    if getattr(args, "json", False):
+        print(json.dumps(res, indent=2))
+        return
+
+    print("\n" + "═" * 75)
+    print(f"  📈 DEMAND & INVENTORY FORECAST: {cid or 'Catalog Target'}")
+    print("═" * 75)
+    print(f"  Daily Order Demand   : {res['daily_demand_units']} unit(s) / day")
+    print(f"  Weekly Order Volume  : {res['weekly_demand_units']} units")
+    print(f"  Monthly Order Volume : {res['monthly_demand_units']} units")
+    print(f"  Safety Stock Buffer  : {res['safety_stock_units']} units")
+    print(f"  Reorder Trigger Point: {res['reorder_point_units']} units")
+    print(f"  Inventory Runway     : {res['inventory_runway_days']} days (Current Stock: {res['current_stock_units']})")
+    print(f"  Reorder Status       : {'⚠️ REORDER NEEDED' if res['reorder_needed'] else '✓ ADEQUATE'}")
+    print("-" * 75)
+    am = res["ad_channel_metrics"]
+    print(f"  Ad Channel: {am['daily_clicks']} clicks/day @ ${am['expected_cpa']:.2f} CPA (Uplift: {am['organic_uplift_multiplier']}x)")
+    print("═" * 75 + "\n")
+
+
+def cmd_sourcing_negotiate(store: Store, args: argparse.Namespace) -> None:
+    from agency.bots.negotiation_simulator import SupplierNegotiationSimulator
+
+    sup_id = getattr(args, "supplier", "cj-domestic-hub")
+    sku = getattr(args, "sku", "SKU-TARGET")
+    cost = getattr(args, "cost", 6.50)
+    ship = getattr(args, "shipping", 3.50)
+    vol = getattr(args, "volume", 150)
+
+    res = SupplierNegotiationSimulator.simulate_volume_tiers(
+        supplier_id=sup_id,
+        sku=sku,
+        current_product_cost=cost,
+        current_shipping_cost=ship,
+        monthly_volume=vol,
+    )
+    if getattr(args, "json", False):
+        print(json.dumps(res, indent=2))
+        return
+
+    print("\n" + "═" * 80)
+    print(f"  🤝 SUPPLIER VOLUME-TIER NEGOTIATION SIMULATOR: {sup_id} ({sku})")
+    print("═" * 80)
+    print(f"  Current Cost Baseline: ${res['current_product_cost']:.2f} unit + ${res['current_shipping_cost']:.2f} ship")
+    print(f"  Target Run-Rate      : {res['monthly_volume_projection']} units / month")
+    print(f"  Target Volume Tier   : {res['target_negotiation_tier']}")
+    print(f"  Annual Margin Growth : ${res['projected_annual_margin_expansion']:,.2f}")
+    print("-" * 80)
+    print("  Volume Discount Scenarios:")
+    for sc in res["volume_scenarios"]:
+        print(f"    - {sc['tier']:<24} (MOQ {sc['moq_range']:<9}): -{sc['discount_percent']:>4.1f}% ──▶ ${sc['target_unit_cost']:.2f} unit (Save: ${sc['annual_savings']:,.2f}/yr)")
+    print("-" * 80)
+    print("  Copy-Ready Supplier Pitch Brief:")
+    pitch = res['negotiation_brief']['copy_ready_pitch'].replace('\n', '\n    ')
+    print(f"    \"{pitch}\"")
+    print("═" * 80 + "\n")
+
+
+def cmd_portfolio_optimize(store: Store, args: argparse.Namespace) -> None:
+    from agency.bots.global_portfolio_optimizer import GlobalPortfolioOptimizer
+
+    budget = getattr(args, "budget", 3000.0)
+    opt = GlobalPortfolioOptimizer(store)
+    res = opt.optimize_portfolio(total_monthly_marketing_budget=budget)
+
+    if getattr(args, "json", False):
+        print(json.dumps(res, indent=2))
+        return
+
+    print("\n" + "═" * 90)
+    print("  🧠 GLOBAL PORTFOLIO OPTIMIZER — MACRO CAPITAL & MARGIN ENGINE")
+    print("═" * 90)
+    print(f"  Catalog SKUs Evaluated : {res['catalog_sku_count']}")
+    print(f"  Monthly Ad Budget      : ${res['total_monthly_marketing_budget']:,.2f}")
+    print(f"  Projected Monthly Orders: {res['portfolio_monthly_demand_orders']:,} orders")
+    print(f"  Gross Revenue Potential: ${res['portfolio_monthly_gross_revenue']:,.2f}")
+    print(f"  Net Profit Contribution: ${res['portfolio_monthly_net_margin']:,.2f} ({res['blended_cogs_multiple']}x COGS)")
+    print(f"  Sourcing Stability Avg : {res['portfolio_average_stability']:.2f}")
+    print("-" * 90)
+    print("  SKU Capital Allocation & Profit Ranking:")
+    for idx, s in enumerate(res.get("skus", []), 1):
+        print(f"    {idx}. {s['product_name'][:30]:<30} | Price: ${s['optimized_retail']:.2f} | Net: ${s['unit_margin']:.2f} | Mo Orders: {s['monthly_demand_units']} | Profit: ${s['projected_monthly_margin']:,.2f} | Ad Alloc: {s['allocated_ad_budget_pct']}%")
+    print("═" * 90 + "\n")
 
 
 def main() -> None:
@@ -583,6 +1325,147 @@ def main() -> None:
 
     subparsers.add_parser("score", help="Calculate opportunity scores across all products")
     subparsers.add_parser("review", help="Interactively review and approve pending trade signals")
+
+    # Sourcing Ranker Command
+    rank_parser = subparsers.add_parser("sourcing:rank", aliases=["sourcing-rank", "rank"], help="Rank competing suppliers for candidate")
+    rank_parser.add_argument("--candidate", "--sku", dest="candidate", help="Target candidate ID or SKU")
+    rank_parser.add_argument("--metric", default="stability_score", choices=["stability_score", "net_margin", "lead_time"], help="Primary sorting metric")
+    rank_parser.add_argument("--json", action="store_true", help="Output machine-readable JSON")
+
+    # Sourcing Volatility Command
+    vol_parser = subparsers.add_parser("sourcing:volatility", aliases=["sourcing-volatility", "volatility"], help="Analyze supplier stability curves and volatility")
+    vol_parser.add_argument("--supplier", "-s", help="Supplier ID to analyze")
+    vol_parser.add_argument("--candidate", "-c", help="Candidate ID to filter audits")
+    vol_parser.add_argument("--json", action="store_true", help="Output machine-readable JSON")
+
+    # Sourcing Lifecycle Command
+    life_parser = subparsers.add_parser("sourcing:lifecycle", aliases=["sourcing-lifecycle", "lifecycle"], help="Inspect supplier lifecycle state machine")
+    life_parser.add_argument("--supplier", "-s", help="Supplier ID to inspect")
+    life_parser.add_argument("--candidate", "-c", help="Candidate ID to filter audits")
+    life_parser.add_argument("--json", action="store_true", help="Output machine-readable JSON")
+
+    # Sourcing Forecast Command
+    fc_parser = subparsers.add_parser("sourcing:forecast", aliases=["sourcing-forecast", "forecast"], help="Preemptively forecast supplier health and depletion")
+    fc_parser.add_argument("--supplier", "-s", help="Supplier ID to forecast")
+    fc_parser.add_argument("--candidate", "-c", help="Candidate ID to filter audits")
+    fc_parser.add_argument("--json", action="store_true", help="Output machine-readable JSON")
+
+    # Sourcing Matrix Command
+    mat_parser = subparsers.add_parser("sourcing:matrix", aliases=["sourcing-matrix", "matrix"], help="Produce SKU-level multi-supplier competition matrix")
+    mat_parser.add_argument("--candidate", "--sku", dest="candidate", help="Target candidate ID or SKU")
+    mat_parser.add_argument("--json", action="store_true", help="Output machine-readable JSON")
+
+    # Phase-4 Predictive Drift Command
+    pdrift_parser = subparsers.add_parser("sourcing:predict-drift", aliases=["sourcing-predict-drift", "predict-drift"], help="Multi-agent predictive drift and collapse modeling")
+    pdrift_parser.add_argument("--supplier", "-s", help="Supplier ID to evaluate")
+    pdrift_parser.add_argument("--candidate", "-c", help="Candidate ID to filter audits")
+    pdrift_parser.add_argument("--json", action="store_true", help="Output machine-readable JSON")
+
+    # Phase-4 Reputation Graph Command
+    rep_parser = subparsers.add_parser("sourcing:reputation", aliases=["sourcing-reputation", "reputation"], help="Inspect supplier and logistics reputation graph and systemic risk")
+    rep_parser.add_argument("--supplier", "-s", help="Specific supplier ID to evaluate blast radius")
+    rep_parser.add_argument("--json", action="store_true", help="Output machine-readable JSON")
+
+    # Phase-4 Portfolio Rebalancing Command
+    reb_parser = subparsers.add_parser("sourcing:rebalance", aliases=["sourcing-rebalance", "rebalance"], help="Orchestrate portfolio-wide multi-SKU supplier rebalancing")
+    reb_parser.add_argument("--supplier", "-s", required=True, help="Degraded supplier ID to failover")
+    reb_parser.add_argument("--reason", default="Autonomous systemic drift rebalance", help="Audit reason")
+    reb_parser.add_argument("--json", action="store_true", help="Output machine-readable JSON")
+
+    # Phase-4 Founder Autonomous Execution Window Command
+    win_parser = subparsers.add_parser("governance:window", aliases=["governance-window", "window"], help="Manage time-boxed Founder autonomous execution windows")
+    win_parser.add_argument("subaction", choices=["list", "grant", "revoke"], nargs="?", default="list", help="Window action")
+    win_parser.add_argument("--hours", type=float, default=2.0, help="Window duration in hours")
+    win_parser.add_argument("--cap", type=float, default=500.0, help="Hard spend limit in USD")
+    win_parser.add_argument("--actor", default="Founder", help="Authorizing founder actor")
+    win_parser.add_argument("--id", help="Window ID to revoke")
+
+    # Phase-5 Dynamic Pricing Command
+    price_parser = subparsers.add_parser("pricing:optimize", aliases=["pricing-optimize", "pricing"], help="Rule-based margin & elasticity dynamic pricing optimizer")
+    price_parser.add_argument("--candidate", "--sku", dest="candidate", help="Target candidate ID or SKU")
+    price_parser.add_argument("--elasticity", type=float, default=1.6, help="Price elasticity coefficient")
+    price_parser.add_argument("--save", action="store_true", help="Save optimized retail price into candidate record")
+    price_parser.add_argument("--json", action="store_true", help="Output machine-readable JSON")
+
+    # Phase-5 Demand Forecasting Command
+    df_parser = subparsers.add_parser("demand:forecast", aliases=["demand-forecast", "demand"], help="Forecast order demand, safety stock, and reorder point")
+    df_parser.add_argument("--candidate", "--sku", dest="candidate", help="Target candidate ID or SKU")
+    df_parser.add_argument("--spend", type=float, default=50.0, help="Target daily ad spend in USD")
+    df_parser.add_argument("--cpc", type=float, default=0.85, help="Estimated CPC in USD")
+    df_parser.add_argument("--cvr", type=float, default=2.2, help="Predicted conversion rate %")
+    df_parser.add_argument("--json", action="store_true", help="Output machine-readable JSON")
+
+    # Phase-5 Supplier Negotiation Simulator Command
+    neg_parser = subparsers.add_parser("sourcing:negotiate", aliases=["sourcing-negotiate", "negotiate"], help="Simulate volume discounts and draft supplier negotiation pitch")
+    neg_parser.add_argument("--supplier", "-s", default="cj-domestic-hub", help="Supplier ID")
+    neg_parser.add_argument("--sku", default="SKU-TARGET", help="Target SKU")
+    neg_parser.add_argument("--cost", type=float, default=6.50, help="Current product unit cost")
+    neg_parser.add_argument("--shipping", type=float, default=3.50, help="Current shipping cost")
+    neg_parser.add_argument("--volume", type=int, default=150, help="Projected monthly order volume")
+    neg_parser.add_argument("--json", action="store_true", help="Output machine-readable JSON")
+
+    # Phase-5 Global Portfolio Optimizer Command
+    glob_parser = subparsers.add_parser("portfolio:optimize", aliases=["portfolio-optimize", "optimize"], help="Global capital allocation and portfolio-wide margin optimizer")
+    glob_parser.add_argument("--budget", type=float, default=3000.0, help="Total monthly marketing budget in USD")
+    glob_parser.add_argument("--json", action="store_true", help="Output machine-readable JSON")
+
+    # Phase-6 Meta Ad Library DSA Ingestion Command
+    dsa_parser = subparsers.add_parser("dsa:ingest", aliases=["dsa-ingest", "dsa"], help="Ingest commercial competitor ads from Meta Ad Library under DSA")
+    dsa_parser.add_argument("--candidate", "--sku", dest="candidate", help="Target candidate ID or SKU")
+    dsa_parser.add_argument("--query", "-q", help="Search query for commercial ads")
+    dsa_parser.add_argument("--countries", default="DE,FR,NL", help="Target EU/UK countries comma-separated (default: DE,FR,NL)")
+    dsa_parser.add_argument("--save", action="store_true", help="Save extracted competitor evidence to candidate record in database")
+    dsa_parser.add_argument("--json", action="store_true", help="Output machine-readable JSON")
+
+    # Phase-6 CJdropshipping Live Inventory Ingestion Command
+    cj_parser = subparsers.add_parser("cj:ingest", aliases=["cj-ingest", "cj"], help="Ingest real-time domestic warehouse stock & costs from CJdropshipping")
+    cj_parser.add_argument("--supplier", "-s", default="cj-dropshipping-us-domestic-hub", help="Supplier ID")
+    cj_parser.add_argument("--sku", default="SKU-MAGNETIC-01", help="CJ SKU or Variant ID")
+    cj_parser.add_argument("--candidate", "-c", default="cand-cj-sku-magnetic-cord-6p", help="Associated Candidate ID")
+    cj_parser.add_argument("--stock", type=int, help="Override stock level for test simulation")
+    cj_parser.add_argument("--lead", type=int, help="Override lead time days for test simulation")
+    cj_parser.add_argument("--cost", type=float, help="Override product cost for test simulation")
+    cj_parser.add_argument("--save", action="store_true", help="Save verification record directly into database")
+    cj_parser.add_argument("--json", action="store_true", help="Output machine-readable JSON")
+
+    # Phase-6 Hermes Desktop UI Telemetry Server Command
+    ui_parser = subparsers.add_parser("ui:serve", aliases=["ui", "serve"], help="Start Hermes Desktop Telemetry API Server")
+    ui_parser.add_argument("--port", "-p", type=int, default=8080, help="HTTP server port (default: 8080)")
+    ui_parser.add_argument("--host", default="127.0.0.1", help="HTTP server host (default: 127.0.0.1)")
+
+    # Phase-6 Synthetic Buyer Journey Simulator Command
+    buyer_parser = subparsers.add_parser("buyer:simulate", aliases=["buyer-simulate", "buyer"], help="Run synthetic buyer journey simulation and log to replay feed")
+    buyer_parser.add_argument("--candidate", "--sku", dest="candidate", default="cand-cj-sku-magnetic-cord-6p", help="Target candidate ID")
+    buyer_parser.add_argument("--customer", default="Marcus Vance (Synthetic Buyer)", help="Customer persona name")
+    buyer_parser.add_argument("--country", default="US", help="Customer destination country")
+    buyer_parser.add_argument("--json", action="store_true", help="Output machine-readable JSON")
+
+    # Phase-6 Medusa v2 Storefront Sync Command
+    medusa_parser = subparsers.add_parser("medusa:sync", aliases=["medusa-sync", "medusa"], help="Sync candidate pricing, variants, and stock into Medusa v2")
+    medusa_parser.add_argument("--candidate", "--sku", dest="candidate", default="cand-cj-sku-magnetic-cord-6p", help="Target candidate ID")
+    medusa_parser.add_argument("--publish", action="store_true", help="Set product status to published (default: draft)")
+    medusa_parser.add_argument("--dry-run", action="store_true", help="Preview Medusa payload without writing")
+    medusa_parser.add_argument("--json", action="store_true", help="Output machine-readable JSON")
+
+    # Phase-6 Stripe Sandbox Webhook CLI Command
+    stripe_parser = subparsers.add_parser("stripe:webhook", aliases=["stripe-webhook", "stripe"], help="Simulate/process a Stripe sandbox webhook event")
+    stripe_parser.add_argument("--candidate", "--sku", dest="candidate", default="cand-cj-sku-magnetic-cord-6p", help="Target candidate ID")
+    stripe_parser.add_argument("--amount", type=float, default=62.99, help="Checkout gross amount in USD")
+    stripe_parser.add_argument("--event-type", dest="event_type", default="checkout.session.completed", help="Stripe event type")
+    stripe_parser.add_argument("--json", action="store_true", help="Output machine-readable JSON")
+
+    # Phase-6 Umami Telemetry Event CLI Command
+    umami_parser = subparsers.add_parser("umami:event", aliases=["umami-event", "umami"], help="Record a cookieless Umami telemetry event (pageview, checkout_started, checkout_completed)")
+    umami_parser.add_argument("--candidate", "--sku", dest="candidate", default="cand-cj-sku-magnetic-cord-6p", help="Target candidate ID")
+    umami_parser.add_argument("--event-type", dest="event_type", default="pageview", choices=["pageview", "checkout_started", "checkout_completed"], help="Umami event type")
+    umami_parser.add_argument("--price", type=float, default=62.99, help="Price point at which event occurred")
+    umami_parser.add_argument("--count", type=int, default=1, help="Number of events to record (batch mode)")
+    umami_parser.add_argument("--json", action="store_true", help="Output machine-readable JSON")
+
+    # Phase-6 Conversion & Elasticity Summary CLI Command
+    conv_parser = subparsers.add_parser("conversion:summary", aliases=["conversion-summary", "conversion"], help="Display live funnel CVR, profit-per-visitor, and empirical elasticity")
+    conv_parser.add_argument("--candidate", "--sku", dest="candidate", default="cand-cj-sku-magnetic-cord-6p", help="Target candidate ID")
+    conv_parser.add_argument("--json", action="store_true", help="Output machine-readable JSON")
 
     # Phase 2 Supplier Intelligence Commands
     ver_parser = subparsers.add_parser("verify", help="Audit supplier reality for a candidate")
@@ -657,6 +1540,69 @@ def main() -> None:
         "scan": cmd_scan,
         "score": cmd_score,
         "review": cmd_review,
+        "sourcing:rank": cmd_sourcing_rank,
+        "sourcing-rank": cmd_sourcing_rank,
+        "rank": cmd_sourcing_rank,
+        "sourcing:volatility": cmd_sourcing_volatility,
+        "sourcing-volatility": cmd_sourcing_volatility,
+        "volatility": cmd_sourcing_volatility,
+        "sourcing:lifecycle": cmd_sourcing_lifecycle,
+        "sourcing-lifecycle": cmd_sourcing_lifecycle,
+        "lifecycle": cmd_sourcing_lifecycle,
+        "sourcing:forecast": cmd_sourcing_forecast,
+        "sourcing-forecast": cmd_sourcing_forecast,
+        "forecast": cmd_sourcing_forecast,
+        "sourcing:matrix": cmd_sourcing_matrix,
+        "sourcing-matrix": cmd_sourcing_matrix,
+        "matrix": cmd_sourcing_matrix,
+        "sourcing:predict-drift": cmd_sourcing_predict_drift,
+        "sourcing-predict-drift": cmd_sourcing_predict_drift,
+        "predict-drift": cmd_sourcing_predict_drift,
+        "sourcing:reputation": cmd_sourcing_reputation,
+        "sourcing-reputation": cmd_sourcing_reputation,
+        "reputation": cmd_sourcing_reputation,
+        "sourcing:rebalance": cmd_sourcing_rebalance,
+        "sourcing-rebalance": cmd_sourcing_rebalance,
+        "rebalance": cmd_sourcing_rebalance,
+        "governance:window": cmd_governance_window,
+        "governance-window": cmd_governance_window,
+        "window": cmd_governance_window,
+        "pricing:optimize": cmd_pricing_optimize,
+        "pricing-optimize": cmd_pricing_optimize,
+        "pricing": cmd_pricing_optimize,
+        "demand:forecast": cmd_demand_forecast,
+        "demand-forecast": cmd_demand_forecast,
+        "demand": cmd_demand_forecast,
+        "sourcing:negotiate": cmd_sourcing_negotiate,
+        "sourcing-negotiate": cmd_sourcing_negotiate,
+        "negotiate": cmd_sourcing_negotiate,
+        "portfolio:optimize": cmd_portfolio_optimize,
+        "portfolio-optimize": cmd_portfolio_optimize,
+        "optimize": cmd_portfolio_optimize,
+        "dsa:ingest": cmd_dsa_ingest,
+        "dsa-ingest": cmd_dsa_ingest,
+        "dsa": cmd_dsa_ingest,
+        "cj:ingest": cmd_cj_ingest,
+        "cj-ingest": cmd_cj_ingest,
+        "cj": cmd_cj_ingest,
+        "ui:serve": cmd_ui_serve,
+        "ui": cmd_ui_serve,
+        "serve": cmd_ui_serve,
+        "buyer:simulate": cmd_buyer_simulate,
+        "buyer-simulate": cmd_buyer_simulate,
+        "buyer": cmd_buyer_simulate,
+        "medusa:sync": cmd_medusa_sync,
+        "medusa-sync": cmd_medusa_sync,
+        "medusa": cmd_medusa_sync,
+        "stripe:webhook": cmd_stripe_webhook,
+        "stripe-webhook": cmd_stripe_webhook,
+        "stripe": cmd_stripe_webhook,
+        "umami:event": cmd_umami_event,
+        "umami-event": cmd_umami_event,
+        "umami": cmd_umami_event,
+        "conversion:summary": cmd_conversion_summary,
+        "conversion-summary": cmd_conversion_summary,
+        "conversion": cmd_conversion_summary,
         "verify": cmd_verify,
         "reconcile": cmd_reconcile,
         "drift": cmd_drift,

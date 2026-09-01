@@ -171,6 +171,24 @@ class TraderBot:
             "created_by": "trader_bot",
         }
 
+        # Sourcing Ranker integration: evaluate supplier reality
+        try:
+            from agency.core.sourcing_ranker import SourcingRanker
+            recent_vers = self.store.list_supplier_verifications(candidate_id=candidate_id, limit=5)
+            rank_result = SourcingRanker.rank_candidate_suppliers(candidate, verifications=recent_vers)
+            top_sup = rank_result["suppliers"][0]
+            signal_data["sourcing_rank"] = {
+                "tier": top_sup["tier"],
+                "stability": top_sup["stability_score"],
+                "lead_time_days": top_sup["metrics"]["lead_days_max"],
+                "margin_projection": top_sup["metrics"]["projected_net_margin"],
+                "actionability": top_sup["actionability_score"],
+            }
+            if not signal_data["action_plan"]["suggested_supplier_id"]:
+                signal_data["action_plan"]["suggested_supplier_id"] = top_sup["supplier_id"]
+        except Exception:
+            pass
+
         self.store.save_signal(signal_data)
         return signal_data
 

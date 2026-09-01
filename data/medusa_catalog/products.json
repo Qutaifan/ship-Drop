@@ -1,0 +1,74 @@
+{
+  "cand-cj-sku-magnetic-cord-6p": {
+    "title": "Magnetic Cable Organizer 6-Pack Desk Clips",
+    "subtitle": "Domestic 48H Tracked Delivery \u2022 Magnetic Cable Organizer 6-Pack Desk Clips",
+    "description": "High-grade Magnetic Cable Organizer 6-Pack Desk Clips. Optimized for home and professional workspace setups.\n\n*Product staging assisted by generative AI (EU AI Act compliant).*",
+    "handle": "magnetic-cable-organizer-6-pack-desk-clips",
+    "status": "draft",
+    "is_giftcard": false,
+    "discountable": true,
+    "variants": [
+      {
+        "title": "Default",
+        "sku": "SKU-MAGNETIC-01",
+        "manage_inventory": true,
+        "inventory_quantity": 350,
+        "prices": [
+          {
+            "currency_code": "usd",
+            "amount": 6299
+          },
+          {
+            "currency_code": "eur",
+            "amount": 5921
+          }
+        ]
+      }
+    ],
+    "metadata": {
+      "candidate_id": "cand-cj-sku-magnetic-cord-6p",
+      "primary_supplier_id": "cj-dropshipping-us-domestic-hub",
+      "stability_score": 0.98,
+      "verified_landed_cost_usd": 10.0,
+      "cogs_multiple": 5.3,
+      "synced_at": "2026-09-01T05:00:34.735707+00:00",
+      "sync_provenance_hmac": "1fcddb72ede5524a54163ab2a17050c8dcac282983a456c7ac5a33d949cd33be"
+    }
+  },
+  "sample-candidate": {
+    "title": "Sample Product Fixture",
+    "subtitle": "Domestic 48H Tracked Delivery \u2022 Sample Product Fixture",
+    "description": "High-grade Sample Product Fixture. Optimized for home and professional workspace setups.\n\n*Product staging assisted by generative AI (EU AI Act compliant).*",
+    "handle": "sample-product-fixture",
+    "status": "published",
+    "is_giftcard": false,
+    "discountable": true,
+    "variants": [
+      {
+        "title": "Default",
+        "sku": "SKU-TARGET",
+        "manage_inventory": true,
+        "inventory_quantity": 250,
+        "prices": [
+          {
+            "currency_code": "usd",
+            "amount": 7999
+          },
+          {
+            "currency_code": "eur",
+            "amount": 7519
+          }
+        ]
+      }
+    ],
+    "metadata": {
+      "candidate_id": "sample-candidate",
+      "primary_supplier_id": "cj-dropshipping-us-domestic-hub",
+      "stability_score": 0.95,
+      "verified_landed_cost_usd": 10.14,
+      "cogs_multiple": 6.9,
+      "synced_at": "2026-09-01T05:44:00.973478+00:00",
+      "sync_provenance_hmac": "56b5c530c4f532e129907ff7360e4d13e00ace34e756f5eb2ba9a2b36cdc13c6"
+    }
+  }
+}

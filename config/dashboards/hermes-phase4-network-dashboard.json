@@ -1,0 +1,44 @@
+{
+  "dashboard_id": "hermes-phase4-network-topology",
+  "title": "Hermes Phase-4 Reputation Graph & Predictive Drift Cockpit",
+  "version": "1.0.0",
+  "theme": "obsidian-dark",
+  "refresh_rate_sec": 30,
+  "widgets": [
+    {
+      "id": "network_graph_summary",
+      "type": "network_topology",
+      "title": "Supplier & Logistics Reputation Graph",
+      "node_types": ["SKU", "SUPPLIER", "WAREHOUSE", "CARRIER"],
+      "edge_types": ["SOURCED_FROM", "FULFILLED_AT", "SHIPPED_VIA"],
+      "metrics": ["systemic_exposure_percent", "impact_radius_suppliers"]
+    },
+    {
+      "id": "predictive_drift_radar",
+      "type": "radar_grid",
+      "title": "Predictive Drift Early Warning System",
+      "thresholds": {
+        "collapse_probability_critical": 0.70,
+        "stockout_horizon_critical_days": 5,
+        "weekly_cost_inflation_critical_pct": 5.0
+      },
+      "actions": ["PREEMPTIVE_SWITCH_URGENT", "MONITOR_TIGHTEN_CADENCE", "STABLE"]
+    },
+    {
+      "id": "portfolio_rebalancing_feed",
+      "type": "audit_event_feed",
+      "title": "Multi-SKU Rebalancing Queue",
+      "tracked_events": [
+        "PORTFOLIO_REBALANCE_EXECUTED",
+        "SUPPLIER_REPLACEMENT_ORCHESTRATED",
+        "EMERGENCY_LISTING_PAUSE_TRIGGERED"
+      ]
+    },
+    {
+      "id": "founder_autonomous_windows",
+      "type": "live_status_monitor",
+      "title": "Founder-Gated Autonomous Execution Windows",
+      "fields": ["window_id", "status", "expires_at", "spend_cap", "consumed_spend", "remaining_budget"]
+    }
+  ]
+}

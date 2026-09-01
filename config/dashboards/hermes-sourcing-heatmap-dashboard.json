@@ -1,0 +1,65 @@
+{
+  "dashboard_id": "hermes-sourcing-heatmap",
+  "title": "Hermes Sourcing Intelligence Heatmap Radar",
+  "version": "1.0.0",
+  "theme": "obsidian-dark",
+  "layout": "heatmap_grid",
+  "refresh_rate_sec": 60,
+  "heatmap_columns": [
+    {
+      "key": "stability_score",
+      "label": "Stability Score",
+      "unit": "scalar",
+      "thresholds": {
+        "optimal": {"min": 0.85, "color": "#2ECC71"},
+        "warning": {"min": 0.70, "max": 0.84, "color": "#F39C12"},
+        "critical": {"max": 0.69, "color": "#E74C3C"}
+      }
+    },
+    {
+      "key": "lead_days_max",
+      "label": "Lead Time Max",
+      "unit": "days",
+      "thresholds": {
+        "optimal": {"max": 5, "color": "#2ECC71"},
+        "warning": {"min": 6, "max": 7, "color": "#F39C12"},
+        "critical": {"min": 8, "color": "#E74C3C"}
+      }
+    },
+    {
+      "key": "projected_net_margin",
+      "label": "Net Margin",
+      "unit": "USD",
+      "thresholds": {
+        "optimal": {"min": 15.0, "color": "#2ECC71"},
+        "warning": {"min": 10.0, "max": 14.99, "color": "#F39C12"},
+        "critical": {"max": 9.99, "color": "#E74C3C"}
+      }
+    },
+    {
+      "key": "stock_level",
+      "label": "Stock Depth",
+      "unit": "units",
+      "thresholds": {
+        "optimal": {"min": 200, "color": "#2ECC71"},
+        "warning": {"min": 30, "max": 199, "color": "#F39C12"},
+        "critical": {"max": 29, "color": "#E74C3C"}
+      }
+    },
+    {
+      "key": "defect_rate_percent",
+      "label": "Defect Rate",
+      "unit": "%",
+      "thresholds": {
+        "optimal": {"max": 1.5, "color": "#2ECC71"},
+        "warning": {"min": 1.51, "max": 3.0, "color": "#F39C12"},
+        "critical": {"min": 3.01, "color": "#E74C3C"}
+      }
+    }
+  ],
+  "governance_alert_triggers": {
+    "stability_drop_switch_threshold": 0.75,
+    "volatility_index_switch_threshold": 0.15,
+    "circuit_breaker_margin_delta_usd": -2.00
+  }
+}

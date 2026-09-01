@@ -110,3 +110,74 @@ class ExecutionGateway:
             "constraints": approval.get("constraints"),
             "message": f"Successfully executed action '{action}' under founder authorization {approval_id} ({mode}).",
         }
+
+    def execute_canary_order_batch(
+        self,
+        candidate_id: str,
+        supplier_id: str,
+        stability_score: float,
+        tier: str,
+        order_count: int = 3,
+        estimated_spend: float = 60.0,
+        consecutive_stable_days: int = 0,
+    ) -> Dict[str, Any]:
+        """Canary execution logic with autonomous scaling:
+        - Baseline (0-7 days): 3 orders, cap $250.00
+        - Scaled Tier 2 (8-21 days): 5 orders, cap $400.00
+        - Scaled Tier 3 (22+ days): 10 orders, cap $600.00 ('TRUSTED_DOMESTIC')
+        """
+        if tier != "PREFERRED_DOMESTIC" or stability_score < 0.85:
+            return {
+                "success": False,
+                "canary_permitted": False,
+                "reason": f"Canary execution rejected: supplier tier is {tier} (requires PREFERRED_DOMESTIC) and stability is {stability_score:.2f} (requires >=0.85).",
+            }
+
+        # Determine dynamic scaling tier
+        if consecutive_stable_days >= 22:
+            scaling_tier = "TRUSTED_DOMESTIC_TIER_3"
+            max_canary_orders = 10
+            canary_spend_cap = 600.0
+        elif consecutive_stable_days >= 8:
+            scaling_tier = "SCALED_DOMESTIC_TIER_2"
+            max_canary_orders = 5
+            canary_spend_cap = 400.0
+        else:
+            scaling_tier = "BASELINE_CANARY_TIER_1"
+            max_canary_orders = 3
+            canary_spend_cap = 250.0
+
+        if order_count > max_canary_orders or estimated_spend > canary_spend_cap:
+            return {
+                "success": False,
+                "canary_permitted": False,
+                "scaling_tier": scaling_tier,
+                "reason": f"Canary limits for {scaling_tier} exceeded: requested {order_count} orders (${estimated_spend:.2f}), max allowed is {max_canary_orders} orders (${canary_spend_cap:.2f}).",
+            }
+
+        canary_id = f"canary-exec-{datetime.datetime.now(datetime.timezone.utc).strftime('%Y%m%d%H%M%S')}"
+        self.store.log_audit("CANARY_BATCH_DISPATCHED", {
+            "canary_id": canary_id,
+            "candidate_id": candidate_id,
+            "supplier_id": supplier_id,
+            "orders": order_count,
+            "spend": estimated_spend,
+            "stability_score": stability_score,
+            "scaling_tier": scaling_tier,
+            "status": "DISPATCHED_TO_TRACKER",
+        })
+
+        return {
+            "success": True,
+            "canary_permitted": True,
+            "canary_id": canary_id,
+            "candidate_id": candidate_id,
+            "supplier_id": supplier_id,
+            "order_count": order_count,
+            "estimated_spend": estimated_spend,
+            "scaling_tier": scaling_tier,
+            "max_allowed_orders": max_canary_orders,
+            "active_spend_cap": canary_spend_cap,
+            "status": "QUEUED_FOR_TRACKER_MONITORING",
+            "message": f"Canary batch of {order_count} order(s) approved under {scaling_tier} (Spend cap: ${canary_spend_cap:.2f}).",
+        }

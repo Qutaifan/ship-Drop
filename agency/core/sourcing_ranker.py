@@ -38,11 +38,11 @@ def determine_supplier_tier(
     margin = metrics.get("projected_net_margin", 0.0)
 
     # 1. Unviable check
-    if stock < 30 or margin < 10.00 or stability < 0.40 or reconciliation_status == "MARGIN_COMPRESSED":
+    if stock < 30 or margin < 10.00 or stability < 0.40:
         return "REJECTED_UNVIABLE"
 
     # 2. Preferred Domestic
-    if is_domestic and stability >= 0.85 and lead_max <= 5 and defect_rate <= 2.0 and margin >= 12.00 and stock >= 100:
+    if is_domestic and stability >= 0.85 and lead_max <= 5 and defect_rate <= 2.0 and margin >= 10.00 and stock >= 100 and reconciliation_status != "MARGIN_COMPRESSED":
         return "PREFERRED_DOMESTIC"
 
     # 3. Qualified Backup
@@ -95,17 +95,22 @@ class SourcingRanker:
             matched_ver = None
             if verifications:
                 for v in verifications:
-                    if v.get("supplier_id") == sup_id or v.get("candidate_id") == cid:
+                    if v.get("supplier_id") == sup_id:
                         matched_ver = v
                         break
+                if not matched_ver:
+                    for v in verifications:
+                        if v.get("candidate_id") == cid and not v.get("supplier_id"):
+                            matched_ver = v
+                            break
 
             cost = float(matched_ver.get("verified_product_cost") if matched_ver else sup.get("quoted_product_cost", econ.get("product_cost", 6.00)))
             ship = float(matched_ver.get("verified_shipping_cost") if matched_ver else sup.get("quoted_shipping_cost", econ.get("shipping_cost", 3.50)))
             stock = int(matched_ver.get("stock_level") if matched_ver else sup.get("stock_level", 250))
             drift = float(matched_ver.get("price_drift_percent", 0.0)) if matched_ver else 0.0
-            defect = float(matched_ver.get("defect_rate_percent", sup.get("defect_rate_percent", 1.5)))
-            lead_max = int(matched_ver.get("lead_days_max", sup.get("lead_days_max", 5 if is_dom else 14)))
-            packaging = sup.get("packaging_type", matched_ver.get("packaging_type", "polybag") if matched_ver else "polybag")
+            defect = float(matched_ver.get("defect_rate_percent") if matched_ver else sup.get("defect_rate_percent", 1.5))
+            lead_max = int(matched_ver.get("lead_days_max") if matched_ver else sup.get("lead_days_max", 5 if is_dom else 14))
+            packaging = str(matched_ver.get("packaging_type") if matched_ver else sup.get("packaging_type", "polybag"))
 
             # 1. Run margin reconciliation
             rec_input_ver = {
@@ -163,11 +168,17 @@ class SourcingRanker:
             # Default: stability score descending, then margin descending
             ranked_list.sort(key=lambda s: (s["stability_score"], s["metrics"]["projected_net_margin"]), reverse=True)
 
-        # Assign ranks
+        from agency.core.supplier_allocator import SupplierAllocator
+        alloc_res = SupplierAllocator.compute_allocation(ranked_list)
+        alloc_map = alloc_res.get("allocations", {})
+
+        # Assign ranks & allocation percentages
         for idx, item in enumerate(ranked_list, start=1):
             item["rank"] = idx
+            item["allocation_percent"] = alloc_map.get(item["supplier_id"], 0.0)
 
-        top_choice = ranked_list[0]["supplier_id"]
+        top_choice = alloc_res.get("primary_supplier_id") or ranked_list[0]["supplier_id"]
+        primary_alloc = alloc_map.get(top_choice, 100.0)
 
         now = datetime.datetime.now(datetime.timezone.utc).isoformat()
         return {
@@ -179,6 +190,8 @@ class SourcingRanker:
             "primary_ranking_metric": primary_metric,
             "suppliers": ranked_list,
             "selected_supplier_id": top_choice,
-            "recommended_allocation_percent": 100.0,
-            "ranking_notes": f"Automated ranking produced across {len(ranked_list)} supplier option(s). Top selection: {top_choice} (Tier: {ranked_list[0]['tier']}).",
+            "recommended_allocation_percent": primary_alloc,
+            "allocation_strategy": alloc_res.get("strategy", "SINGLE_SOURCE"),
+            "allocations": alloc_map,
+            "ranking_notes": f"Automated ranking produced across {len(ranked_list)} supplier option(s). Top selection: {top_choice} (Strategy: {alloc_res.get('strategy')}).",
         }

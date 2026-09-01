@@ -136,6 +136,11 @@
           "reconciliation_status": {
             "type": "string",
             "enum": ["MARGIN_STABLE", "MARGIN_COMPRESSED"]
+          },
+          "allocation_percent": {
+            "type": "number",
+            "minimum": 0,
+            "maximum": 100
           }
         }
       }
@@ -147,6 +152,15 @@
       "type": "number",
       "minimum": 0,
       "maximum": 100
+    },
+    "allocation_strategy": {
+      "type": "string"
+    },
+    "allocations": {
+      "type": "object",
+      "additionalProperties": {
+        "type": "number"
+      }
     },
     "ranking_notes": {
       "type": "string"

@@ -1,0 +1,436 @@
+{
+  "active_windows": [
+    {
+      "window_id": "win-202609010428-723944",
+      "authorized_by": "Ahmad",
+      "granted_at": "2026-09-01T04:28:31.994789+00:00",
+      "expires_at": "2026-09-01T06:28:31.994789+00:00",
+      "duration_hours": 2.0,
+      "spend_cap": 500.0,
+      "consumed_spend": 0.0,
+      "permitted_actions": [
+        "CANARY_ORDER_DISPATCH",
+        "SUPPLIER_FAILOVER_SWITCH"
+      ],
+      "permitted_skus": [
+        "*"
+      ],
+      "status": "ACTIVE",
+      "cryptographic_token": "daf5202e85c09677abd2925b708baab7c7b803980ffc97d7e37122cd5ecb9ca0"
+    },
+    {
+      "window_id": "win-202609010428-888d7b",
+      "authorized_by": "Ahmad",
+      "granted_at": "2026-09-01T04:28:59.198350+00:00",
+      "expires_at": "2026-09-01T06:28:59.198350+00:00",
+      "duration_hours": 2.0,
+      "spend_cap": 500.0,
+      "consumed_spend": 75.0,
+      "permitted_actions": [
+        "CANARY_ORDER_DISPATCH",
+        "SUPPLIER_FAILOVER_SWITCH"
+      ],
+      "permitted_skus": [
+        "*"
+      ],
+      "status": "REVOKED",
+      "cryptographic_token": "d3818786a896b937ab4b8237744f385b2114245a0b8ea9b5568e8885f8063c37"
+    },
+    {
+      "window_id": "win-202609010429-3d5ea2",
+      "authorized_by": "Ahmad",
+      "granted_at": "2026-09-01T04:29:12.303796+00:00",
+      "expires_at": "2026-09-01T06:29:12.303796+00:00",
+      "duration_hours": 2.0,
+      "spend_cap": 500.0,
+      "consumed_spend": 75.0,
+      "permitted_actions": [
+        "CANARY_ORDER_DISPATCH",
+        "SUPPLIER_FAILOVER_SWITCH"
+      ],
+      "permitted_skus": [
+        "*"
+      ],
+      "status": "REVOKED",
+      "cryptographic_token": "9c16ac4e55bf6ab175198a0da1abe29e56b4b997e876bd617391e0efad3039e8"
+    },
+    {
+      "window_id": "win-202609010429-8fed65",
+      "authorized_by": "Ahmad",
+      "granted_at": "2026-09-01T04:29:22.632416+00:00",
+      "expires_at": "2026-09-01T06:29:22.632416+00:00",
+      "duration_hours": 2.0,
+      "spend_cap": 500.0,
+      "consumed_spend": 75.0,
+      "permitted_actions": [
+        "CANARY_ORDER_DISPATCH",
+        "SUPPLIER_FAILOVER_SWITCH"
+      ],
+      "permitted_skus": [
+        "*"
+      ],
+      "status": "REVOKED",
+      "cryptographic_token": "e22d5c69db74da6964a5a3673fc7bcd2afad1e8cde0242ef789dd49e8aec72bf"
+    },
+    {
+      "window_id": "win-202609010433-8f314a",
+      "authorized_by": "Ahmad",
+      "granted_at": "2026-09-01T04:33:06.305999+00:00",
+      "expires_at": "2026-09-01T06:33:06.305999+00:00",
+      "duration_hours": 2.0,
+      "spend_cap": 500.0,
+      "consumed_spend": 75.0,
+      "permitted_actions": [
+        "CANARY_ORDER_DISPATCH",
+        "SUPPLIER_FAILOVER_SWITCH"
+      ],
+      "permitted_skus": [
+        "*"
+      ],
+      "status": "REVOKED",
+      "cryptographic_token": "57556e3963d5a0cb7c703e9fc7f975f05aa2bb9bddf7552ad97ea88c183e2e45"
+    },
+    {
+      "window_id": "win-202609010435-397823",
+      "authorized_by": "Ahmad",
+      "granted_at": "2026-09-01T04:35:34.927127+00:00",
+      "expires_at": "2026-09-01T06:35:34.927127+00:00",
+      "duration_hours": 2.0,
+      "spend_cap": 500.0,
+      "consumed_spend": 75.0,
+      "permitted_actions": [
+        "CANARY_ORDER_DISPATCH",
+        "SUPPLIER_FAILOVER_SWITCH"
+      ],
+      "permitted_skus": [
+        "*"
+      ],
+      "status": "REVOKED",
+      "cryptographic_token": "c3061228be89947b1a2cf7667e9dc6e399d3d84bfc8adce1ef6dbd48e99a8989"
+    },
+    {
+      "window_id": "win-202609010442-e11d9c",
+      "authorized_by": "Ahmad",
+      "granted_at": "2026-09-01T04:42:19.343418+00:00",
+      "expires_at": "2026-09-01T06:42:19.343418+00:00",
+      "duration_hours": 2.0,
+      "spend_cap": 500.0,
+      "consumed_spend": 75.0,
+      "permitted_actions": [
+        "CANARY_ORDER_DISPATCH",
+        "SUPPLIER_FAILOVER_SWITCH"
+      ],
+      "permitted_skus": [
+        "*"
+      ],
+      "status": "REVOKED",
+      "cryptographic_token": "862180b996323819a9f0ae484e5544975542f4d42c7b9e4ce9b060447c088c7e"
+    },
+    {
+      "window_id": "win-202609010446-e17293",
+      "authorized_by": "Ahmad",
+      "granted_at": "2026-09-01T04:46:22.073116+00:00",
+      "expires_at": "2026-09-01T06:46:22.073116+00:00",
+      "duration_hours": 2.0,
+      "spend_cap": 500.0,
+      "consumed_spend": 75.0,
+      "permitted_actions": [
+        "CANARY_ORDER_DISPATCH",
+        "SUPPLIER_FAILOVER_SWITCH"
+      ],
+      "permitted_skus": [
+        "*"
+      ],
+      "status": "REVOKED",
+      "cryptographic_token": "182b2290e03615f505a53cc139c7692daf9112a2d6a5bf03a81812f52b6f5b9a"
+    },
+    {
+      "window_id": "win-202609010450-bdbfd2",
+      "authorized_by": "Founder",
+      "granted_at": "2026-09-01T04:50:20.022088+00:00",
+      "expires_at": "2026-09-01T06:20:20.022088+00:00",
+      "duration_hours": 1.5,
+      "spend_cap": 250.0,
+      "consumed_spend": 0.0,
+      "permitted_actions": [
+        "CANARY_ORDER_DISPATCH",
+        "SUPPLIER_FAILOVER_SWITCH"
+      ],
+      "permitted_skus": [
+        "*"
+      ],
+      "status": "REVOKED",
+      "cryptographic_token": "ff4f49ecc54f715713c4cb2113870340edff5135c8aadd2d2fa61f7d1a9ca91a"
+    },
+    {
+      "window_id": "win-202609010451-5dba10",
+      "authorized_by": "Founder",
+      "granted_at": "2026-09-01T04:51:23.959797+00:00",
+      "expires_at": "2026-09-01T06:21:23.959797+00:00",
+      "duration_hours": 1.5,
+      "spend_cap": 250.0,
+      "consumed_spend": 0.0,
+      "permitted_actions": [
+        "CANARY_ORDER_DISPATCH",
+        "SUPPLIER_FAILOVER_SWITCH"
+      ],
+      "permitted_skus": [
+        "*"
+      ],
+      "status": "REVOKED",
+      "cryptographic_token": "7f9f612b78fe845d9c16a56d0638ba88a8cdbfa7eefdf67abb17b1a538c45113"
+    },
+    {
+      "window_id": "win-202609010451-ed42c8",
+      "authorized_by": "Founder",
+      "granted_at": "2026-09-01T04:51:38.219662+00:00",
+      "expires_at": "2026-09-01T06:21:38.219662+00:00",
+      "duration_hours": 1.5,
+      "spend_cap": 250.0,
+      "consumed_spend": 0.0,
+      "permitted_actions": [
+        "CANARY_ORDER_DISPATCH",
+        "SUPPLIER_FAILOVER_SWITCH"
+      ],
+      "permitted_skus": [
+        "*"
+      ],
+      "status": "REVOKED",
+      "cryptographic_token": "82eaa5862d6253998102ffd933ca6d2b5e4ecc3b5818ed4c0db5eceb246b3ff9"
+    },
+    {
+      "window_id": "win-202609010451-fbddd7",
+      "authorized_by": "Ahmad",
+      "granted_at": "2026-09-01T04:51:40.255103+00:00",
+      "expires_at": "2026-09-01T06:51:40.255103+00:00",
+      "duration_hours": 2.0,
+      "spend_cap": 500.0,
+      "consumed_spend": 75.0,
+      "permitted_actions": [
+        "CANARY_ORDER_DISPATCH",
+        "SUPPLIER_FAILOVER_SWITCH"
+      ],
+      "permitted_skus": [
+        "*"
+      ],
+      "status": "REVOKED",
+      "cryptographic_token": "3fea3074700152a4d78262a6d0bf58f7341a028b0cb380950c2eb82f868d565d"
+    },
+    {
+      "window_id": "win-202609010456-6987b0",
+      "authorized_by": "Founder",
+      "granted_at": "2026-09-01T04:56:43.785762+00:00",
+      "expires_at": "2026-09-01T06:26:43.785762+00:00",
+      "duration_hours": 1.5,
+      "spend_cap": 250.0,
+      "consumed_spend": 0.0,
+      "permitted_actions": [
+        "CANARY_ORDER_DISPATCH",
+        "SUPPLIER_FAILOVER_SWITCH"
+      ],
+      "permitted_skus": [
+        "*"
+      ],
+      "status": "REVOKED",
+      "cryptographic_token": "1c0635d157a638c8d598b22381e6bb6751ff846264c544fe8eea424cbdc2201f"
+    },
+    {
+      "window_id": "win-202609010456-3ca709",
+      "authorized_by": "Ahmad",
+      "granted_at": "2026-09-01T04:56:45.812571+00:00",
+      "expires_at": "2026-09-01T06:56:45.812571+00:00",
+      "duration_hours": 2.0,
+      "spend_cap": 500.0,
+      "consumed_spend": 75.0,
+      "permitted_actions": [
+        "CANARY_ORDER_DISPATCH",
+        "SUPPLIER_FAILOVER_SWITCH"
+      ],
+      "permitted_skus": [
+        "*"
+      ],
+      "status": "REVOKED",
+      "cryptographic_token": "e2cd528cdfc7b2524215ccf58eca011e32a69c5e14a0530d266006431d86c477"
+    },
+    {
+      "window_id": "win-202609010506-6db3e9",
+      "authorized_by": "Founder",
+      "granted_at": "2026-09-01T05:06:59.211582+00:00",
+      "expires_at": "2026-09-01T06:36:59.211582+00:00",
+      "duration_hours": 1.5,
+      "spend_cap": 250.0,
+      "consumed_spend": 0.0,
+      "permitted_actions": [
+        "CANARY_ORDER_DISPATCH",
+        "SUPPLIER_FAILOVER_SWITCH"
+      ],
+      "permitted_skus": [
+        "*"
+      ],
+      "status": "REVOKED",
+      "cryptographic_token": "d5f8728fda802e184a156e2f361e5d7afbf1d0e24cf90d630cdb83d7c8fb2e9f"
+    },
+    {
+      "window_id": "win-202609010507-a4a9a4",
+      "authorized_by": "Ahmad",
+      "granted_at": "2026-09-01T05:07:01.780240+00:00",
+      "expires_at": "2026-09-01T07:07:01.780240+00:00",
+      "duration_hours": 2.0,
+      "spend_cap": 500.0,
+      "consumed_spend": 75.0,
+      "permitted_actions": [
+        "CANARY_ORDER_DISPATCH",
+        "SUPPLIER_FAILOVER_SWITCH"
+      ],
+      "permitted_skus": [
+        "*"
+      ],
+      "status": "REVOKED",
+      "cryptographic_token": "392e4001eb23585284421c93fe965caa89e4ad5bb21eda9cc8f5b0ec1053bff2"
+    },
+    {
+      "window_id": "win-202609010523-b2d875",
+      "authorized_by": "Founder",
+      "granted_at": "2026-09-01T05:23:23.307602+00:00",
+      "expires_at": "2026-09-01T06:53:23.307602+00:00",
+      "duration_hours": 1.5,
+      "spend_cap": 250.0,
+      "consumed_spend": 0.0,
+      "permitted_actions": [
+        "CANARY_ORDER_DISPATCH",
+        "SUPPLIER_FAILOVER_SWITCH"
+      ],
+      "permitted_skus": [
+        "*"
+      ],
+      "status": "REVOKED",
+      "cryptographic_token": "b9b058f87aa7540cf3e0ea8fb761089f0dbaabfeb4a2087227df0bfe84ae59f0"
+    },
+    {
+      "window_id": "win-202609010523-7e2fce",
+      "authorized_by": "Ahmad",
+      "granted_at": "2026-09-01T05:23:25.255934+00:00",
+      "expires_at": "2026-09-01T07:23:25.255934+00:00",
+      "duration_hours": 2.0,
+      "spend_cap": 500.0,
+      "consumed_spend": 75.0,
+      "permitted_actions": [
+        "CANARY_ORDER_DISPATCH",
+        "SUPPLIER_FAILOVER_SWITCH"
+      ],
+      "permitted_skus": [
+        "*"
+      ],
+      "status": "REVOKED",
+      "cryptographic_token": "ebc6e226152e26f2682885370247dede30d4beedf569a8e183ba201e2583a7b6"
+    },
+    {
+      "window_id": "win-202609010525-7e2b62",
+      "authorized_by": "Founder",
+      "granted_at": "2026-09-01T05:25:26.506284+00:00",
+      "expires_at": "2026-09-01T06:55:26.506284+00:00",
+      "duration_hours": 1.5,
+      "spend_cap": 250.0,
+      "consumed_spend": 0.0,
+      "permitted_actions": [
+        "CANARY_ORDER_DISPATCH",
+        "SUPPLIER_FAILOVER_SWITCH"
+      ],
+      "permitted_skus": [
+        "*"
+      ],
+      "status": "REVOKED",
+      "cryptographic_token": "ef93a859a1cf1c6bb8b7ff24956a8507dd61308a2491a8566c4fc443eff8adf5"
+    },
+    {
+      "window_id": "win-202609010525-84a9f5",
+      "authorized_by": "Ahmad",
+      "granted_at": "2026-09-01T05:25:28.382822+00:00",
+      "expires_at": "2026-09-01T07:25:28.382822+00:00",
+      "duration_hours": 2.0,
+      "spend_cap": 500.0,
+      "consumed_spend": 75.0,
+      "permitted_actions": [
+        "CANARY_ORDER_DISPATCH",
+        "SUPPLIER_FAILOVER_SWITCH"
+      ],
+      "permitted_skus": [
+        "*"
+      ],
+      "status": "REVOKED",
+      "cryptographic_token": "0ebb7ade1fc4b876aa229cac9e518a4fc378a64f23a7e9f19c84947cb2dcfac1"
+    },
+    {
+      "window_id": "win-202609010533-5a1696",
+      "authorized_by": "Founder",
+      "granted_at": "2026-09-01T05:33:06.870018+00:00",
+      "expires_at": "2026-09-01T07:03:06.870018+00:00",
+      "duration_hours": 1.5,
+      "spend_cap": 250.0,
+      "consumed_spend": 0.0,
+      "permitted_actions": [
+        "CANARY_ORDER_DISPATCH",
+        "SUPPLIER_FAILOVER_SWITCH"
+      ],
+      "permitted_skus": [
+        "*"
+      ],
+      "status": "REVOKED",
+      "cryptographic_token": "1218dbbb118a24411a00a21f6e8cc280c39900bd7edd3af4e52dd889f68ac985"
+    },
+    {
+      "window_id": "win-202609010533-b95c58",
+      "authorized_by": "Ahmad",
+      "granted_at": "2026-09-01T05:33:08.963481+00:00",
+      "expires_at": "2026-09-01T07:33:08.963481+00:00",
+      "duration_hours": 2.0,
+      "spend_cap": 500.0,
+      "consumed_spend": 75.0,
+      "permitted_actions": [
+        "CANARY_ORDER_DISPATCH",
+        "SUPPLIER_FAILOVER_SWITCH"
+      ],
+      "permitted_skus": [
+        "*"
+      ],
+      "status": "REVOKED",
+      "cryptographic_token": "e8aa53aa528c4f263520bb296a3b1c27bb638dc37112fd27707b899251369791"
+    },
+    {
+      "window_id": "win-202609010543-4aac7d",
+      "authorized_by": "Founder",
+      "granted_at": "2026-09-01T05:43:57.530855+00:00",
+      "expires_at": "2026-09-01T07:13:57.530855+00:00",
+      "duration_hours": 1.5,
+      "spend_cap": 250.0,
+      "consumed_spend": 0.0,
+      "permitted_actions": [
+        "CANARY_ORDER_DISPATCH",
+        "SUPPLIER_FAILOVER_SWITCH"
+      ],
+      "permitted_skus": [
+        "*"
+      ],
+      "status": "REVOKED",
+      "cryptographic_token": "abbaa0cd4bf35f94c8de26150ad789720b218b8abe2c66e8593926ebe8e83522"
+    },
+    {
+      "window_id": "win-202609010543-a1a0a4",
+      "authorized_by": "Ahmad",
+      "granted_at": "2026-09-01T05:43:59.468214+00:00",
+      "expires_at": "2026-09-01T07:43:59.468214+00:00",
+      "duration_hours": 2.0,
+      "spend_cap": 500.0,
+      "consumed_spend": 75.0,
+      "permitted_actions": [
+        "CANARY_ORDER_DISPATCH",
+        "SUPPLIER_FAILOVER_SWITCH"
+      ],
+      "permitted_skus": [
+        "*"
+      ],
+      "status": "REVOKED",
+      "cryptographic_token": "bcc10c6c07ba9ad390a4e7493aa9606764bd99027f315bd26c5d08309ec88c80"
+    }
+  ]
+}

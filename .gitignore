@@ -19,6 +19,9 @@ data/*.db
 data/*.db-journal
 data/verifications/*.json
 data/audit/*.json
+data/signals/*.json
+data/supplier_health/*.json
+data/telemetry/*.json
 data/archives/
 data/medusa_drafts/
 

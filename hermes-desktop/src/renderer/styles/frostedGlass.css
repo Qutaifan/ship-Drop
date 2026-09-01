@@ -1,0 +1,51 @@
+:root {
+  --hermes-bg-void: #050811;
+  --hermes-glass-panel: rgba(10, 16, 32, 0.78);
+  --hermes-glass-border: rgba(0, 240, 255, 0.22);
+  --hermes-glass-hover: rgba(0, 240, 255, 0.38);
+  
+  --hermes-blue-electric: #00F0FF;
+  --hermes-blue-glow: rgba(0, 240, 255, 0.40);
+  --hermes-gold-sovereign: #FFB800;
+  --hermes-gold-glow: rgba(255, 184, 0, 0.40);
+
+  --hermes-status-active: #00FF88;
+  --hermes-status-watchlist: #FFDD00;
+  --hermes-status-degraded: #FF8800;
+  --hermes-status-critical: #FF0055;
+  --hermes-status-autonomous: #00BFFF;
+}
+
+body {
+  margin: 0;
+  padding: 0;
+  background-color: var(--hermes-bg-void);
+  color: #E2E8F0;
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+  overflow-x: hidden;
+  user-select: none;
+}
+
+.hermes-glass-card {
+  background: var(--hermes-glass-panel);
+  backdrop-filter: blur(20px) saturate(180%);
+  -webkit-backdrop-filter: blur(20px) saturate(180%);
+  border: 1px solid var(--hermes-glass-border);
+  box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.70), inset 0 0 16px rgba(0, 240, 255, 0.05);
+  border-radius: 12px;
+  transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.hermes-glass-card:hover {
+  border-color: var(--hermes-glass-hover);
+  box-shadow: 0 12px 40px 0 rgba(0, 240, 255, 0.15), inset 0 0 20px rgba(0, 240, 255, 0.08);
+}
+
+.hermes-glow-text {
+  text-shadow: 0 0 12px var(--hermes-blue-glow);
+}
+
+.hermes-gold-text {
+  color: var(--hermes-gold-sovereign);
+  text-shadow: 0 0 12px var(--hermes-gold-glow);
+}
