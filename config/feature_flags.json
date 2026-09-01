@@ -1,0 +1,6 @@
+{
+  "auto_drift_actions": false,
+  "quarantine_mode": true,
+  "drift_auto_pause_critical": false,
+  "verification_worker_enabled": true
+}

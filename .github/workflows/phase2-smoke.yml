@@ -1,0 +1,53 @@
+name: Phase 2 Smoke Tests
+
+on:
+  push:
+    branches: [ main ]
+  workflow_dispatch:
+
+jobs:
+  smoke:
+    runs-on: ubuntu-latest
+    env:
+      DB_PATH: data/dropship.db
+      SAMPLE_CANDIDATE: cand-cj-sku-magnetic-cord-6p
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: '3.11'
+
+      - name: Install dependencies
+        run: |
+          python -m pip install --upgrade pip
+          if [ -f requirements.txt ]; then pip install -r requirements.txt; fi
+          npm ci
+
+      - name: Run Phase 2 smoke script
+        id: smoke
+        run: |
+          mkdir -p artifacts
+          python scripts/smoke_phase2.py > artifacts/smoke.out 2>&1 || echo "SMOKE_FAILED"
+          if grep -q "SMOKE TEST PASSED" artifacts/smoke.out; then
+            echo "smoke=passed" >> $GITHUB_OUTPUT
+          else
+            echo "smoke=failed" >> $GITHUB_OUTPUT
+            exit 1
+          fi
+
+      - name: Upload artifacts on success
+        if: steps.smoke.outputs.smoke == 'passed'
+        uses: actions/upload-artifact@v4
+        with:
+          name: smoke-success
+          path: artifacts/smoke.out
+
+      - name: Upload artifacts on failure
+        if: failure()
+        uses: actions/upload-artifact@v4
+        with:
+          name: smoke-failure-logs
+          path: artifacts

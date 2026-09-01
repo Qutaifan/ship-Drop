@@ -18,6 +18,11 @@ CHECKS = [
     (ROOT / "schemas" / "market-config.schema.json", ROOT / "config" / "markets" / "us-pilot.json"),
     (ROOT / "schemas" / "evidence.schema.json", ROOT / "fixtures" / "evidence.sample.json"),
     (ROOT / "schemas" / "candidate.schema.json", ROOT / "fixtures" / "candidate.sample.json"),
+    (ROOT / "schemas" / "supplier.schema.json", ROOT / "fixtures" / "supplier.sample.json"),
+    (ROOT / "schemas" / "trade_signal.schema.json", ROOT / "fixtures" / "trade_signal.sample.json"),
+    (ROOT / "schemas" / "approval.schema.json", ROOT / "fixtures" / "approval.sample.json"),
+    (ROOT / "schemas" / "supplier_verification.schema.json", ROOT / "fixtures" / "supplier_verification.sample.json"),
+    (ROOT / "schemas" / "sourcing_ranker.schema.json", ROOT / "fixtures" / "sourcing_ranker.sample.json"),
 ]
 
 

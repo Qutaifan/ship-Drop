@@ -1,0 +1,43 @@
+{
+  "$schema": "../schemas/supplier.schema.json",
+  "version": "1.0.0",
+  "supplier_id": "cj-us-warehouse-01",
+  "supplier_name": "CJ Dropshipping US East Warehouse",
+  "platform": "cjdropshipping",
+  "warehouse_country": "US",
+  "origin_country": "CN",
+  "reliability_rating": 4.8,
+  "dispute_rate_percent": 1.2,
+  "typical_lead_days": {
+    "processing_days": 1,
+    "shipping_min_days": 3,
+    "shipping_max_days": 6
+  },
+  "shipping_tiers": [
+    {
+      "carrier": "USPS",
+      "service_name": "USPS Ground Advantage",
+      "base_cost": 4.85,
+      "currency": "USD",
+      "tracked": true
+    },
+    {
+      "carrier": "USPS",
+      "service_name": "Priority Mail",
+      "base_cost": 8.95,
+      "currency": "USD",
+      "tracked": true
+    }
+  ],
+  "eu_anti_deminimis_ready": false,
+  "us_domestic_stock": true,
+  "score": {
+    "total": 89.5,
+    "fulfillment_speed": 92.0,
+    "cost_competitiveness": 85.0,
+    "reliability": 91.0,
+    "compliance": 90.0
+  },
+  "notes": "Domestic US inventory eliminates international customs and de minimis friction.",
+  "updated_at": "2026-09-01T00:00:00Z"
+}

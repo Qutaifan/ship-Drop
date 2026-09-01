@@ -1,0 +1,13 @@
+/var/log/hermes/*.log {
+    daily
+    missingok
+    rotate 14
+    compress
+    delaycompress
+    notifempty
+    create 0640 ahmad ahmad
+    sharedscripts
+    postrotate
+        systemctl kill -s HUP hermes-worker.service >/dev/null 2>&1 || true
+    endscript
+}

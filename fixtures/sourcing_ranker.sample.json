@@ -1,0 +1,73 @@
+{
+  "$schema": "../schemas/sourcing_ranker.schema.json",
+  "version": "1.0.0",
+  "candidate_id": "cand-cj-sku-magnetic-cord-6p",
+  "ranked_at": "2026-09-01T06:50:00Z",
+  "evaluation_market": "US",
+  "primary_ranking_metric": "stability_score",
+  "suppliers": [
+    {
+      "rank": 1,
+      "supplier_id": "cj-dropshipping-us-domestic-hu",
+      "supplier_name": "CJ Dropshipping US Domestic Hub",
+      "stability_score": 0.98,
+      "actionability_score": 12.5,
+      "metrics": {
+        "landed_cost": 7.13,
+        "projected_net_margin": 13.11,
+        "cogs_multiple": 1.84,
+        "stock_level": 350,
+        "lead_days_max": 5,
+        "warehouse_country": "US",
+        "warehouse_type": "domestic",
+        "defect_rate_percent": 1.2
+      },
+      "tier": "PREFERRED_DOMESTIC",
+      "canary_eligible": true,
+      "reconciliation_status": "MARGIN_STABLE"
+    },
+    {
+      "rank": 2,
+      "supplier_id": "us-direct-fulfillment-east",
+      "supplier_name": "US Direct Fulfillment East",
+      "stability_score": 0.88,
+      "actionability_score": 28.0,
+      "metrics": {
+        "landed_cost": 7.65,
+        "projected_net_margin": 12.59,
+        "cogs_multiple": 1.65,
+        "stock_level": 140,
+        "lead_days_max": 6,
+        "warehouse_country": "US",
+        "warehouse_type": "domestic",
+        "defect_rate_percent": 1.8
+      },
+      "tier": "QUALIFIED_BACKUP",
+      "canary_eligible": true,
+      "reconciliation_status": "MARGIN_STABLE"
+    },
+    {
+      "rank": 3,
+      "supplier_id": "shenzhen-cable-tech-direct",
+      "supplier_name": "Shenzhen Cable Tech Direct",
+      "stability_score": 0.42,
+      "actionability_score": 85.0,
+      "metrics": {
+        "landed_cost": 8.90,
+        "projected_net_margin": 11.34,
+        "cogs_multiple": 1.27,
+        "stock_level": 2500,
+        "lead_days_max": 16,
+        "warehouse_country": "CN",
+        "warehouse_type": "international_transit",
+        "defect_rate_percent": 3.5
+      },
+      "tier": "HIGH_RISK_MONITOR",
+      "canary_eligible": false,
+      "reconciliation_status": "MARGIN_COMPRESSED"
+    }
+  ],
+  "selected_supplier_id": "cj-dropshipping-us-domestic-hu",
+  "recommended_allocation_percent": 100,
+  "ranking_notes": "Primary US domestic supplier clears all canary thresholds (>0.85 stability, >100 units stock, lead time <= 5 days)."
+}

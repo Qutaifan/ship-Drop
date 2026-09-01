@@ -1,0 +1,26 @@
+[Unit]
+Description=Hermes Supplier Intelligence Background Worker Daemon
+After=network.target
+Wants=network-online.target
+
+[Service]
+Type=simple
+User=ahmad
+Group=ahmad
+WorkingDirectory=/home/ahmad/Projects/Dropshipping
+Environment=PYTHONUNBUFFERED=1
+EnvironmentFile=-/etc/default/hermes
+ExecStart=/usr/bin/python3 -m agency.cli worker --verify-interval 14400 --drift-interval 3600
+Restart=always
+RestartSec=10s
+StandardOutput=append:/var/log/hermes/worker.log
+StandardError=append:/var/log/hermes/worker-error.log
+
+# Sandbox & Hardening
+NoNewPrivileges=true
+ProtectSystem=full
+ProtectHome=read-only
+ReadWritePaths=/home/ahmad/Projects/Dropshipping/data /var/log/hermes
+
+[Install]
+WantedBy=multi-user.target

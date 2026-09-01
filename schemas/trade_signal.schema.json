@@ -1,0 +1,109 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://dropship.local/schemas/trade_signal.schema.json",
+  "title": "Dropship Trade Recommendation Signal",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "signal_id",
+    "signal_type",
+    "candidate_id",
+    "product_name",
+    "target_market",
+    "confidence",
+    "scores",
+    "hypothesis",
+    "action_plan",
+    "approval_status",
+    "created_at",
+    "created_by"
+  ],
+  "properties": {
+    "$schema": {"type": "string"},
+    "version": {"type": "string", "default": "1.0.0"},
+    "signal_id": {"type": "string", "pattern": "^sig-[a-z0-9_-]+$"},
+    "signal_type": {
+      "type": "string",
+      "enum": ["BUY", "SELL_KILL", "SUPPLIER_SWITCH", "TREND_ALERT"]
+    },
+    "candidate_id": {"type": "string", "minLength": 1},
+    "product_name": {"type": "string", "minLength": 1},
+    "target_market": {"type": "string", "minLength": 2},
+    "confidence": {
+      "type": "string",
+      "enum": ["low", "medium", "high"]
+    },
+    "scores": {
+      "type": "object",
+      "required": ["profit_score", "risk_score", "trend_score", "opportunity_score", "supplier_score"],
+      "properties": {
+        "profit_score": {"type": "number", "minimum": 0, "maximum": 100},
+        "risk_score": {"type": "number", "minimum": 0, "maximum": 100},
+        "trend_score": {"type": "number", "minimum": 0, "maximum": 100},
+        "opportunity_score": {"type": "number", "minimum": 0, "maximum": 100},
+        "supplier_score": {"type": "number", "minimum": 0, "maximum": 100}
+      }
+    },
+    "hypothesis": {
+      "type": "object",
+      "required": [
+        "predicted_ctr_percent",
+        "predicted_cvr_percent",
+        "predicted_cpa",
+        "predicted_net_margin",
+        "target_ad_budget",
+        "statement"
+      ],
+      "properties": {
+        "predicted_ctr_percent": {"type": "number", "minimum": 0},
+        "predicted_cvr_percent": {"type": "number", "minimum": 0},
+        "predicted_cpa": {"type": "number", "minimum": 0},
+        "predicted_net_margin": {"type": "number"},
+        "target_ad_budget": {"type": "number", "minimum": 0},
+        "statement": {"type": "string", "minLength": 10}
+      }
+    },
+    "action_plan": {
+      "type": "object",
+      "required": ["recommended_action", "execution_tier", "creative_hooks", "contingency_rule"],
+      "properties": {
+        "recommended_action": {"type": "string", "minLength": 5},
+        "execution_tier": {
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 4
+        },
+        "creative_hooks": {
+          "type": "array",
+          "items": {"type": "string"}
+        },
+        "suggested_supplier_id": {"type": ["string", "null"]},
+        "contingency_rule": {"type": "string", "minLength": 5}
+      }
+    },
+    "approval_status": {
+      "type": "string",
+      "enum": ["PENDING_FOUNDER_REVIEW", "APPROVED", "REJECTED", "EXECUTED", "QUARANTINE_48H"]
+    },
+    "approval_id": {"type": ["string", "null"]},
+    "created_at": {"type": "string", "format": "date-time"},
+    "created_by": {
+      "type": "string",
+      "enum": ["trader_bot", "tracker_bot", "scout_bot", "orchestrator"]
+    },
+    "sourcing_rank": {
+      "type": "object",
+      "required": ["tier", "stability", "lead_time_days", "margin_projection", "actionability"],
+      "properties": {
+        "tier": {
+          "type": "string",
+          "enum": ["PREFERRED_DOMESTIC", "QUALIFIED_BACKUP", "HIGH_RISK_MONITOR", "REJECTED_UNVIABLE"]
+        },
+        "stability": {"type": "number", "minimum": 0.0, "maximum": 1.0},
+        "lead_time_days": {"type": "integer", "minimum": 1},
+        "margin_projection": {"type": "number"},
+        "actionability": {"type": "number", "minimum": 0.0, "maximum": 100.0}
+      }
+    }
+  }
+}

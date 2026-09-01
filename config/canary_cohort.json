@@ -1,0 +1,14 @@
+{
+  "canary_enabled": false,
+  "max_automated_spend": 250.0,
+  "canary_skus": [
+    "cand-cj-sku-magnetic-cord-6p",
+    "candidate-us-2026-09-01-foldable-silicone-bowl",
+    "candidate-us-2026-09-01-magnetic-cable-organizer"
+  ],
+  "tripwires": {
+    "max_false_positive_rate": 0.05,
+    "min_stability_score": 0.85,
+    "max_margin_drop_usd": 2.0
+  }
+}

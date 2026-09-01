@@ -1,0 +1,40 @@
+{
+  "$schema": "../schemas/trade_signal.schema.json",
+  "version": "1.0.0",
+  "signal_id": "sig-buy-magnetic-cable-organizer",
+  "signal_type": "BUY",
+  "candidate_id": "candidate-us-2026-09-01-magnetic-cable-organizer",
+  "product_name": "Magnetic Cable Organizer 6-Pack",
+  "target_market": "US",
+  "confidence": "high",
+  "scores": {
+    "profit_score": 88.5,
+    "risk_score": 15.0,
+    "trend_score": 86.0,
+    "opportunity_score": 89.0,
+    "supplier_score": 89.5
+  },
+  "hypothesis": {
+    "predicted_ctr_percent": 2.5,
+    "predicted_cvr_percent": 3.0,
+    "predicted_cpa": 10.0,
+    "predicted_net_margin": 15.44,
+    "target_ad_budget": 350.0,
+    "statement": "This product is predicted to achieve 2.5% CTR and 3.0% CVR at $10.00 CPA with $15.44 net margin due to high viral engagement on TikTok #desksetup and reliable 3-day US domestic fulfillment."
+  },
+  "action_plan": {
+    "recommended_action": "Launch creative testing with 3 hooks across TikTok Spark Ads and IG Reels; cap initial daily spend at $50/day.",
+    "execution_tier": 4,
+    "creative_hooks": [
+      "Problem: Tangled desk wires causing daily distraction and mess",
+      "Transformation: 5-second snap-in cable alignment before-and-after",
+      "Lifestyle: Clean, minimalist Scandinavian home-office setup"
+    ],
+    "suggested_supplier_id": "cj-us-warehouse-01",
+    "contingency_rule": "Auto-kill recommendation if CPA exceeds $15.00 after 100 outbound clicks."
+  },
+  "approval_status": "PENDING_FOUNDER_REVIEW",
+  "approval_id": null,
+  "created_at": "2026-09-01T00:00:00Z",
+  "created_by": "trader_bot"
+}
