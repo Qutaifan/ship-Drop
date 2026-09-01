@@ -33,14 +33,24 @@ You must evaluate every potential product against these strict parameters before
 5. **Low Return Potential**: Does it have simple, durable mechanics? Avoid complex electronics, highly specific sizing curves (apparel), or fragile materials.
 6. **Low Local Retail Availability**: Is it difficult for a consumer to find at their local grocery or department store?
 
-### B. Sourcing & 2026 Regulatory Compliance
-* **Anti-De Minimis Strategy — BOTH markets, updated 2026-08-30**:
-  * **US**: the $800 de minimis exemption is restricted.
-  * **EU**: the €150 customs-duty exemption was **eliminated on 1 July 2026** and replaced by a **€3 flat duty per customs item** (not per unit — items sharing a tariff code and description group into one charge), scheduled to run until 1 July 2028. Import VAT applies to every consignment regardless of value.
-  * **Consequence**: direct-from-China fulfilment now carries €3 duty + import VAT + a carrier handling fee (~€2) on *every order*. Fulfilling from an **EU warehouse** pays duty once on the bulk import and never again per order. This is no longer a nice-to-have — it is the difference between a viable and an unviable unit economic.
-* **VAT is not revenue.** B2C sales into the EU are VAT-inclusive at the destination rate. Register for **IOSS/OSS** to file EU-wide rather than per country. Every margin calculation runs on the **ex-VAT** amount.
-* **EU AI Act Compliance**: If deploying AI-generated product images, virtual models, or conversational support agents in European markets, include clean, visible disclosures (e.g., *"Product imagery/support assisted by generative AI"*).
-* **FTC Personalized Pricing Safeguards**: Never deploy pricing algorithms that dynamically adjust pricing based on individual user tracking or demographic profiling. All dynamic pricing must be rule-based (inventory levels, time of day, seasonal demand, or competitor matching).
+### B. Sourcing, Multi-Market Dynamics & Regulatory Compliance
+* **Anti-De Minimis & Fulfillment Strategy**:
+  * **US Market (Active Pilot)**:
+    * The $800 de minimis exemption is restricted. Direct-from-China imports now incur duty + MPF + HMF per parcel.
+    * **Primary Route**: **CJ US Warehouses (LA / NJ)** delivering 2–5 days via USPS/UPS. Import duty paid once in bulk, $0 per-order customs duty, zero delivery friction.
+    * **US Tax Nexus**: No federal VAT. State sales tax economic nexus handled via Stripe Tax. Model unit economics at **0% VAT** (gross retail = revenue).
+    * **US Landed Cost Ceiling Rule**: Landed cost must be **≤ 24.2% of retail** (at VAT 0%, 3% payment fee). At $69.99 retail, max landed cost is ~$16.94; at $49.99, max is $12.10.
+    * **Payment Funnel**: 1-Tap **Shop Pay** (~40% of Shopify checkouts), **Apple Pay**, **PayPal** (~30% of US e-commerce), Google Pay. 99% prepaid; no COD.
+  * **EU Market**:
+    * The €150 customs-duty exemption was eliminated on 1 July 2026 and replaced by a **€3 flat duty per customs item**. Import VAT applies to every order.
+    * **Primary Route**: Fulfill from an **EU warehouse (DE / NL)** to pay duty once on bulk import and €0 per order.
+    * **VAT is not revenue**: B2C sales are VAT-inclusive at destination rate (e.g. DE 19%). Margins run strictly on the **ex-VAT** amount via IOSS/OSS.
+  * **GCC Market (Saudi Arabia, UAE, Kuwait, Qatar)**:
+    * **Primary Route**: Direct air lines (AJEX, iMile, SMSA) 5–9 days or Riyadh/Dubai 3PL for 1–3 days.
+    * **Tax & COD**: KSA 15% VAT, UAE 5% VAT. 1-Tap Apple Pay / Mada / Tabby / Tamara. For COD: 3-field form + automated WhatsApp confirmation to hold RTO < 12–15%.
+* **EU AI Act & FTC Consumer Protection**:
+  * Any AI-generated marketing visual or conversational model must include clean disclosures (e.g., *"Product imagery assisted by generative AI"*).
+  * Never deploy individualized dynamic pricing. All dynamic pricing must be rule-based only (inventory, time of day, seasonality, competitor matching).
 
 ---
 
@@ -226,4 +236,32 @@ Revisit at the storefront phase as an agentic-commerce channel, and A/B it again
   * Lead time > 7 days
 * **CLI Inspection**: `python -m agency.cli orion:eval --candidate <id>` / `python -m agency.cli orion:rank`
 * **Schema Contract**: `schemas/orion_evaluation.schema.json`
+
+### PPC STRATEGY PLANNER (Cross-Platform Media Buyer)
+* **Mission**: Translate product margins and behavioral archetypes (demo, visual, search) into quantitative multi-platform media buying allocations across Google Shopping/PMax, Meta Advantage+, and TikTok Spark Ads.
+* **ROAS Mathematical Framework**:
+  * $\text{Break-Even ROAS} = \frac{1}{\text{Gross Margin \%}}$
+  * $\text{Target ROAS} = \text{Break-Even ROAS} \times 1.65$
+  * $\text{Max Break-Even CPA} = \text{Gross Margin \$}$
+  * $\text{Target CPA} = \text{Max CPA} \times 0.65$
+* **Channel Allocation Defaults**:
+  * *Demo / Problem Solver*: TikTok 60% | Meta 25% | Google 15%
+  * *Visual / DTC Lifestyle*: Meta 55% | TikTok 30% | Google 15%
+  * *High-Intent Search*: Google 55% | Meta 30% | TikTok 15%
+* **CLI Inspection**: `python -m agency.cli ppc:plan --candidate <id> --budget <usd>`
+* **Skill Reference**: `.agents/skills/ecommerce-ppc-strategy-planner/SKILL.md`
+
+### VEO FLOW DIRECTOR (Winner-Phase Video Scaling)
+* **Mission**: Re-shoot winning creative hooks (3s view rate $\ge 40\%$ or ROAS $\ge 2.0\times$) in Google Flow Veo 3.1 Quality mode for cinematic vertical (9:16) video with native audio.
+* **Cost & Credit Structure (Pro Tier)**:
+  * *Veo 3.1 Lite*: 10 credits (~$0.20) for motion/angle iterations.
+  * *Veo 3.1 Fast*: 20 credits (~$0.40) for pacing tests.
+  * *Veo 3.1 Quality*: 100 credits (~$2.00) for final winner-phase scaling assets.
+  * *1080p Upscale*: 0 credits ($0.00).
+* **Deterministic Prompt Sequence (≤80 words)**:
+  $$\text{Subject} \longrightarrow \text{Setting} \longrightarrow \text{Motion} \longrightarrow \text{Camera} \longrightarrow \text{Audio}$$
+* **Compliance**: Automated FFmpeg synthetic disclosure overlay (*"Product imagery assisted by generative AI"*). Never strip SynthID.
+* **CLI & Tooling**: `python scripts/flow_credit_check.py --model quality --clips <n>`
+* **Skill Reference**: `.agents/skills/veo-flow-ads/SKILL.md`
+
 

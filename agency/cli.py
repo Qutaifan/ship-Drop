@@ -1278,6 +1278,68 @@ def cmd_orion_rank(store: Store, args: argparse.Namespace) -> None:
     print("═" * 90 + "\n")
 
 
+def cmd_ppc_plan(store: Store, args: argparse.Namespace) -> None:
+    from agency.bots.ppc_planner_bot import PPCPlannerBot
+
+    cid = getattr(args, "candidate", None) or "cand-cj-sku-magnetic-cord-6p"
+    cand = store.get_candidate(cid)
+
+    econ = cand.get("unit_economics", {}) if cand else {}
+    retail = getattr(args, "retail", None)
+    if retail is None:
+        retail = float(econ.get("gross_selling_price", 62.99))
+
+    landed = getattr(args, "landed", None)
+    if landed is None:
+        landed = float(econ.get("product_cost", 6.50)) + float(econ.get("shipping_cost", 3.50))
+
+    budget = getattr(args, "budget", 1500.0)
+    p_type = getattr(args, "type", "demo")
+    name = cand.get("product_name", cid) if cand else cid
+
+    plan = PPCPlannerBot.build_strategy(
+        product_name=name,
+        retail=retail,
+        landed=landed,
+        monthly_budget=budget,
+        product_type=p_type,
+    )
+
+    if getattr(args, "json", False):
+        print(json.dumps(plan, indent=2))
+        return
+
+    fin = plan["financial_framework"]
+    print("\n" + "═" * 80)
+    print(f"  📊 CROSS-PLATFORM PPC CAMPAIGN PLANNER: {plan['product_name']}")
+    print(f"  Primary Channel: {plan['primary_channel']} | Monthly Budget: ${plan['monthly_budget_usd']:.2f}")
+    print("═" * 80)
+    print("  ─── 1. FINANCIAL & ROAS TARGETS ───")
+    print(f"  Retail Price            : ${fin['retail_price']:.2f}")
+    print(f"  Landed COGS             : ${fin['landed_cost']:.2f} ({fin['landed_cost_ratio_percent']}% of retail)")
+    print(f"  US 24.2% Landed Rule    : {'✅ PASS' if fin['us_24pct_landed_rule_passed'] else '⚠️ WARNING (Landed > 24.2% of retail)'}")
+    print(f"  Gross Profit Margin     : ${fin['gross_margin_usd']:.2f} ({fin['profit_margin_percent']}%)")
+    print(f"  Break-Even ROAS         : {fin['break_even_roas']}x (Every $1 in ads must return ${fin['break_even_roas']:.2f})")
+    print(f"  Target ROAS (1.65x BE)  : {fin['target_roas']}x")
+    print(f"  Max Break-Even CPA      : ${fin['max_cpa_usd']:.2f}")
+    print(f"  Target CPA              : ${fin['target_cpa_usd']:.2f}")
+    print(f"  CAC Gate Cleared        : {'✅ PASS (Margin >= 2x Median CPA)' if fin['cac_gate_cleared'] else '❌ FAIL'}")
+
+    print("\n  ─── 2. MULTI-PLATFORM BUDGET ALLOCATION ───")
+    for k, a in plan["platform_allocations"].items():
+        print(f"  • {a['platform_name']}")
+        print(f"    Split: {a['allocation_percent']}% | Budget: ${a['monthly_budget_usd']:.2f}/mo (${a['daily_budget_usd']:.2f}/day)")
+        print(f"    Benchmark ROAS: {a['benchmark_roas']}x | Projected Rev: ${a['projected_gross_revenue']:.2f}")
+        print(f"    Role: {a['best_for']}")
+
+    print("\n  ─── 3. PROJECTED MONTHLY PERFORMANCE ───")
+    print(f"  Total Ad Spend          : ${plan['monthly_budget_usd']:.2f}")
+    print(f"  Projected Gross Revenue : ${plan['projected_monthly_revenue']:.2f}")
+    print(f"  Blended Projected ROAS  : {plan['blended_projected_roas']}x")
+    print(f"  Projected Net Profit    : ${plan['projected_monthly_net_profit']:.2f}")
+    print("═" * 80 + "\n")
+
+
 def cmd_demand_forecast(store: Store, args: argparse.Namespace) -> None:
     from agency.core.demand_forecasting import DemandForecastingEngine
 
@@ -1533,6 +1595,15 @@ def main() -> None:
     orion_rank_parser = subparsers.add_parser("orion:rank", aliases=["orion-rank"], help="Rank all catalog opportunities with ORION Market Research Agent")
     orion_rank_parser.add_argument("--json", action="store_true", help="Output machine-readable JSON")
 
+    # PPC Cross-Platform Strategy Planner Command
+    ppc_parser = subparsers.add_parser("ppc:plan", aliases=["ppc-plan", "ppc"], help="Generate multi-platform PPC strategy & ROAS framework (TikTok, Meta, Google)")
+    ppc_parser.add_argument("--candidate", "--sku", dest="candidate", default="cand-cj-sku-magnetic-cord-6p", help="Target candidate ID")
+    ppc_parser.add_argument("--retail", type=float, help="Override gross retail price")
+    ppc_parser.add_argument("--landed", type=float, help="Override landed cost")
+    ppc_parser.add_argument("--budget", type=float, default=1500.0, help="Monthly marketing budget in USD (default: $1500)")
+    ppc_parser.add_argument("--type", choices=["demo", "search", "visual"], default="demo", help="Product behavior archetype")
+    ppc_parser.add_argument("--json", action="store_true", help="Output machine-readable JSON")
+
     # Phase 2 Supplier Intelligence Commands
     ver_parser = subparsers.add_parser("verify", help="Audit supplier reality for a candidate")
     ver_parser.add_argument("candidate_id", nargs="?", help="Target candidate ID (optional: runs all if omitted)")
@@ -1674,6 +1745,9 @@ def main() -> None:
         "orion": cmd_orion_eval,
         "orion:rank": cmd_orion_rank,
         "orion-rank": cmd_orion_rank,
+        "ppc:plan": cmd_ppc_plan,
+        "ppc-plan": cmd_ppc_plan,
+        "ppc": cmd_ppc_plan,
         "verify": cmd_verify,
         "reconcile": cmd_reconcile,
         "drift": cmd_drift,

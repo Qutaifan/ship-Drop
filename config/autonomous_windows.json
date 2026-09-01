@@ -503,6 +503,78 @@
       ],
       "status": "REVOKED",
       "cryptographic_token": "09c6523aa9942e32b510e7444763e9c18e8064455f0f418ad854f9f91177cfca"
+    },
+    {
+      "window_id": "win-202609011347-b30354",
+      "authorized_by": "Founder",
+      "granted_at": "2026-09-01T13:47:46.713818+00:00",
+      "expires_at": "2026-09-01T15:17:46.713818+00:00",
+      "duration_hours": 1.5,
+      "spend_cap": 250.0,
+      "consumed_spend": 0.0,
+      "permitted_actions": [
+        "CANARY_ORDER_DISPATCH",
+        "SUPPLIER_FAILOVER_SWITCH"
+      ],
+      "permitted_skus": [
+        "*"
+      ],
+      "status": "REVOKED",
+      "cryptographic_token": "16e4d1e4317c8dbbf6c9277f28cfe5e932df953faa32d0bd59b93f2a62e5cef7"
+    },
+    {
+      "window_id": "win-202609011347-09555e",
+      "authorized_by": "Ahmad",
+      "granted_at": "2026-09-01T13:47:48.999882+00:00",
+      "expires_at": "2026-09-01T15:47:48.999882+00:00",
+      "duration_hours": 2.0,
+      "spend_cap": 500.0,
+      "consumed_spend": 75.0,
+      "permitted_actions": [
+        "CANARY_ORDER_DISPATCH",
+        "SUPPLIER_FAILOVER_SWITCH"
+      ],
+      "permitted_skus": [
+        "*"
+      ],
+      "status": "REVOKED",
+      "cryptographic_token": "59cdad9117f08d7945cd5882e1fae4f38bba068704a64ddf45efee356d652ca8"
+    },
+    {
+      "window_id": "win-202609011348-7a04ae",
+      "authorized_by": "Founder",
+      "granted_at": "2026-09-01T13:48:34.007956+00:00",
+      "expires_at": "2026-09-01T15:18:34.007956+00:00",
+      "duration_hours": 1.5,
+      "spend_cap": 250.0,
+      "consumed_spend": 0.0,
+      "permitted_actions": [
+        "CANARY_ORDER_DISPATCH",
+        "SUPPLIER_FAILOVER_SWITCH"
+      ],
+      "permitted_skus": [
+        "*"
+      ],
+      "status": "REVOKED",
+      "cryptographic_token": "ef4f64adbf1ddd578ca29d4fc258882288dc16cba9fd20128e2e0e3dcfa8c9f9"
+    },
+    {
+      "window_id": "win-202609011348-e242f0",
+      "authorized_by": "Ahmad",
+      "granted_at": "2026-09-01T13:48:36.246448+00:00",
+      "expires_at": "2026-09-01T15:48:36.246448+00:00",
+      "duration_hours": 2.0,
+      "spend_cap": 500.0,
+      "consumed_spend": 75.0,
+      "permitted_actions": [
+        "CANARY_ORDER_DISPATCH",
+        "SUPPLIER_FAILOVER_SWITCH"
+      ],
+      "permitted_skus": [
+        "*"
+      ],
+      "status": "REVOKED",
+      "cryptographic_token": "94f102e4ced235e96266143013dce50a65e383c39e39a350d5c94ba903b669f5"
     }
   ]
 }
