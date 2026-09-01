@@ -209,6 +209,7 @@ idempotency_key_format: cj:{store_order_id}:{fulfillment_version}
 1. Keep `CJ_LOG_FILE` as a string value in the isolated supplier profile.
 2. Do **not** authenticate CJ in the default/project profile.
 3. Do **not** use the pasted CJ MCP token in repo files or reports; rotate it before live use because it appeared in chat context.
+3. **Decision 2026-09-01:** Token rotation deferred per Ahmad until development phases complete. Token remains in chat context only; not stored in repo, config, or project files. Rotation will be performed before Phase 4+ live supplier workflows.
 4. Keep isolated profile `dropship-supplier-ops` as the only approved location for later CJ supplier operations.
 5. Add a tool allowlist/denylist to the operating contract and enforce it in review.
 6. Require Phase 5 approval artifact before any order/payment/dispute/store mutation.

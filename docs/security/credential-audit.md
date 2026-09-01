@@ -31,6 +31,8 @@ The scan reported **82 pattern hits**, but the reviewed hits are false positives
 
 A CJ MCP token was provided in chat context. It was treated as a live secret, was **not** copied into project files, and is intentionally not reproduced in this repository. Because chat transcripts can persist, the token should be rotated/regenerated before any live supplier workflow.
 
+**Update 2026-09-01 (Ahmad decision):** Token rotation deferred until development phases complete. Token remains in chat context only; not stored in repo, config, or project files. Rotation will be performed before Phase 4+ live supplier workflows.
+
 ## Follow-Up Before Phase 4+
 
 Before live ads, storefront publishing, or fulfillment:
