@@ -1,0 +1,50 @@
+Phase 3-6 Release v1.3.0 — Cryptographic Provenance Record
+============================================================
+Generated via Hermes orchestration on 2026-09-01.
+
+1. GIT PROVENANCE
+-----------------
+Tag name:              v1.3.0
+Annotated tag SHA-1:   eec9b9e2adc288be871632099957469829b231c8
+Commit SHA-1 (head):   9031981
+Short commit SHA:      9031981
+Parent commit (v1.2.0): 0dd15d11c723d758779981f914f59b6346497ba5
+
+2. CRITICAL ARTIFACTS (SHA-256, taken from the tagged tree)
+------------------------------------------------------------
+docs/hermes-v1-architecture-whitepaper.md : 84ce0ec7d5d26aa5988d7653ec8cdbb7b602225d646155e1865e2bc94c47bab6
+agency/governance/execution_gateway.py   : 8a26a110324d6bf20184764fb96bdb8b15fc81f6276cae2ca1da391aebfda517
+
+3. TEST VERIFICATION
+--------------------
+Suite:     npm test (npm run test scripts)
+Result:    82/82 tests PASS
+          Phase 0 schema validation: PASS
+          Workspace validation:      PASS (0 errors, 0 warnings, 4 pre-existing notes)
+
+4. SECURITY SCAN
+----------------
+Method:   git grep against all committed files in this release
+Result:   No new secrets exposed. All api_key/token/secret matches are documented
+          false positives or env-var references per docs/security/credential-audit.md.
+          CJ MCP token rotation remains deferred per Ahmad (see audit file, 2026-09-01).
+
+5. EXECUTION GATES (NOT TRIGGERED)
+----------------------------------
+This release ran with approvals.mode = off for autonomous bots (scout/analyst/sentiment/risk).
+Trader bot approvals.mode = smart + human confirmation.
+No founder approval tokens were consumed (no live spend / supplier orders / publishes).
+
+6. CI CONTEXT
+-------------
+CI status link will populate from the remote GitHub Actions run that processes
+tag v1.3.0 push. Verify before allowing any promotion to a live environment:
+Checklist:
+  [ ] CI run for tag v1.3.0 completes green on GitHub
+  [ ] gh release v1.3.0 asset SHA-256 matches critical-artifacts block above
+  [ ] No new findings from secret scanning on CI
+
+7. SIGN-OFF
+------------
+Recorded by: Hermes-Ecom autonomous agent
+Orchestrator session: default profile
