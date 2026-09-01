@@ -67,8 +67,8 @@
       "stability_score": 0.95,
       "verified_landed_cost_usd": 10.14,
       "cogs_multiple": 6.9,
-      "synced_at": "2026-09-01T05:44:00.973478+00:00",
-      "sync_provenance_hmac": "56b5c530c4f532e129907ff7360e4d13e00ace34e756f5eb2ba9a2b36cdc13c6"
+      "synced_at": "2026-09-01T13:24:30.037102+00:00",
+      "sync_provenance_hmac": "28f102ba0f6b437dad2a396c20b72fa4c049414bf47d9bdeacfb419d9df7730d"
     }
   }
 }

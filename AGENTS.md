@@ -202,3 +202,28 @@ env FIRECRAWL_API_URL=http://<host>:3002 npx -y firecrawl-mcp
 2. It injects a third-party script and a visible widget into the page, which is in direct tension with PROTOCOL-02's LCP budget and frictionless no-account checkout.
 
 Revisit at the storefront phase as an agentic-commerce channel, and A/B it against conversion rate rather than adopting it on principle.
+
+---
+
+## 8. Agent Set & Specialized Roles
+
+### ORION (Market Research Agent)
+* **Mission**: Identify, evaluate, and rank product opportunities using structured market intelligence. Produces deterministic, governance-compliant output formatted for downstream agents (SCOUT, PRICER, FORECASTER, ALLOCATOR).
+* **Metric Formulas**:
+  * $\text{Demand Score} = (\text{Trend Velocity} \times 0.4) + (\text{Search Volume} \times 0.3) + (\text{Buyer Intent} \times 0.3)$
+  * $\text{Competition Score} = (\text{Advertiser Count} \times 0.5) + (\text{Price Band Tightness} \times 0.3) + (\text{Brand Dominance} \times 0.2)$
+  * $\text{Sourcing Score} = (\text{Domestic Availability} \times 0.4) + (\text{Stability} \times 0.3) + (\text{Lead Time} \times 0.2) + (\text{Cost Efficiency} \times 0.1)$
+* **Weighting Model**:
+  $$\text{Viability Score} = (\text{Demand} \times 0.35) + ((100 - \text{Competition}) \times 0.15) + (\text{Sourcing} \times 0.25) + (\text{Price Band Potential} \times 0.15) + (\text{Risk Modifier} \times 0.10)$$
+* **Governance Filters (Hard Rejection Overrides)**:
+  * Saturation Level = SATURATED or OVER-SATURATED
+  * Sourcing Score < 60
+  * Risk Level = EXTREME
+  * Trend Velocity < 20
+  * Median Competitor Price < $10
+  * Product is breakable AND only internationally sourced
+  * Supplier stability < 0.70
+  * Lead time > 7 days
+* **CLI Inspection**: `python -m agency.cli orion:eval --candidate <id>` / `python -m agency.cli orion:rank`
+* **Schema Contract**: `schemas/orion_evaluation.schema.json`
+

@@ -1220,6 +1220,64 @@ def cmd_conversion_summary(store: Store, args: argparse.Namespace) -> None:
     print("═" * 80 + "\n")
 
 
+def cmd_orion_eval(store: Store, args: argparse.Namespace) -> None:
+    from agency.bots.orion_bot import OrionBot
+
+    cid = getattr(args, "candidate", None) or "cand-cj-sku-magnetic-cord-6p"
+    orion = OrionBot(store)
+    res = orion.evaluate_candidate(cid)
+
+    if getattr(args, "json", False):
+        print(json.dumps(res, indent=2))
+        return
+
+    print("\n" + "═" * 80)
+    print(f"  🌌 ORION MARKET RESEARCH EVALUATION: {res['product_name']}")
+    print(f"  Category: {res['category']} | Recommendation: {res['final_recommendation']}")
+    print("═" * 80)
+    print(f"  Demand Score         : {res['demand_score']}/100 (Velocity: {res['trend_velocity']})")
+    print(f"  Competition Score    : {res['competition_score']}/100 (Saturation: {res['saturation_level']})")
+    print(f"  Sourcing Feasibility : {res['sourcing_feasibility']}/100")
+    print(f"  Risk Level           : {res['risk_level']}")
+    print(f"  Price Band           : {res['median_price_band']} (Recommended: {res['recommended_retail']})")
+    print(f"  Recommended Regions  : {', '.join(res['recommended_regions'])}")
+    print(f"  Recommended Angles   : {', '.join(res['recommended_angles'])}")
+    print(f"  ────────────────────────────────────────────────────────")
+    print(f"  🏆 FINAL VIABILITY SCORE : {res['viability_score']}/100")
+    print(f"  DECISION VERDICT         : {res['final_recommendation']}")
+    if res.get("governance_rejection_reasons"):
+        print(f"  ⚠️ Governance Rejections :")
+        for r in res["governance_rejection_reasons"]:
+            print(f"     - {r}")
+    print("═" * 80 + "\n")
+
+
+def cmd_orion_rank(store: Store, args: argparse.Namespace) -> None:
+    from agency.bots.orion_bot import OrionBot
+
+    orion = OrionBot(store)
+    candidates = store.list_candidates()
+    if not candidates:
+        print("No candidates found in store to rank.")
+        return
+
+    results = [orion.evaluate_candidate(c["candidate_id"]) for c in candidates]
+    ranked = sorted(results, key=lambda x: (x["final_recommendation"] == "APPROVE", x["viability_score"]), reverse=True)
+
+    if getattr(args, "json", False):
+        print(json.dumps(ranked, indent=2))
+        return
+
+    print("\n" + "═" * 90)
+    print("  🌌 ORION MARKET RESEARCH OPPORTUNITY RANKING")
+    print("═" * 90)
+    print(f"  {'Rank':<5} {'Product Name':<35} {'Demand':<8} {'Comp':<8} {'Source':<8} {'Viability':<10} {'Verdict'}")
+    print("  " + "─" * 85)
+    for idx, r in enumerate(ranked, start=1):
+        print(f"  {idx:<5} {r['product_name'][:33]:<35} {r['demand_score']:<8.1f} {r['competition_score']:<8.1f} {r['sourcing_feasibility']:<8.1f} {r['viability_score']:<10.1f} {r['final_recommendation']}")
+    print("═" * 90 + "\n")
+
+
 def cmd_demand_forecast(store: Store, args: argparse.Namespace) -> None:
     from agency.core.demand_forecasting import DemandForecastingEngine
 
@@ -1467,6 +1525,14 @@ def main() -> None:
     conv_parser.add_argument("--candidate", "--sku", dest="candidate", default="cand-cj-sku-magnetic-cord-6p", help="Target candidate ID")
     conv_parser.add_argument("--json", action="store_true", help="Output machine-readable JSON")
 
+    # ORION Market Research Agent Commands
+    orion_eval_parser = subparsers.add_parser("orion:eval", aliases=["orion-eval", "orion"], help="Evaluate product opportunity with ORION Market Research Agent")
+    orion_eval_parser.add_argument("--candidate", "--sku", dest="candidate", default="cand-cj-sku-magnetic-cord-6p", help="Target candidate ID")
+    orion_eval_parser.add_argument("--json", action="store_true", help="Output machine-readable JSON")
+
+    orion_rank_parser = subparsers.add_parser("orion:rank", aliases=["orion-rank"], help="Rank all catalog opportunities with ORION Market Research Agent")
+    orion_rank_parser.add_argument("--json", action="store_true", help="Output machine-readable JSON")
+
     # Phase 2 Supplier Intelligence Commands
     ver_parser = subparsers.add_parser("verify", help="Audit supplier reality for a candidate")
     ver_parser.add_argument("candidate_id", nargs="?", help="Target candidate ID (optional: runs all if omitted)")
@@ -1603,6 +1669,11 @@ def main() -> None:
         "conversion:summary": cmd_conversion_summary,
         "conversion-summary": cmd_conversion_summary,
         "conversion": cmd_conversion_summary,
+        "orion:eval": cmd_orion_eval,
+        "orion-eval": cmd_orion_eval,
+        "orion": cmd_orion_eval,
+        "orion:rank": cmd_orion_rank,
+        "orion-rank": cmd_orion_rank,
         "verify": cmd_verify,
         "reconcile": cmd_reconcile,
         "drift": cmd_drift,

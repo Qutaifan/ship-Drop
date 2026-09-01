@@ -1,0 +1,61 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "OrionEvaluation",
+  "description": "ORION Market Research Agent Product Opportunity Evaluation Schema",
+  "type": "object",
+  "required": [
+    "product_name",
+    "category",
+    "demand_score",
+    "competition_score",
+    "saturation_level",
+    "trend_velocity",
+    "median_price_band",
+    "recommended_retail",
+    "recommended_regions",
+    "recommended_angles",
+    "sourcing_feasibility",
+    "risk_level",
+    "viability_score",
+    "final_recommendation"
+  ],
+  "properties": {
+    "product_name": { "type": "string" },
+    "category": { "type": "string" },
+    "demand_score": { "type": "number", "minimum": 0, "maximum": 100 },
+    "competition_score": { "type": "number", "minimum": 0, "maximum": 100 },
+    "saturation_level": {
+      "type": "string",
+      "enum": ["UNDER", "SWEET-SPOT", "SATURATED", "OVER-SATURATED"]
+    },
+    "trend_velocity": {
+      "type": "string",
+      "enum": ["slow", "medium", "fast", "explosive"]
+    },
+    "median_price_band": { "type": "string" },
+    "recommended_retail": { "type": "string" },
+    "recommended_regions": {
+      "type": "array",
+      "items": { "type": "string" }
+    },
+    "recommended_angles": {
+      "type": "array",
+      "items": { "type": "string" }
+    },
+    "sourcing_feasibility": { "type": "number", "minimum": 0, "maximum": 100 },
+    "risk_level": {
+      "type": "string",
+      "enum": ["LOW", "MEDIUM", "HIGH", "EXTREME"]
+    },
+    "viability_score": { "type": "number", "minimum": 0, "maximum": 100 },
+    "final_recommendation": {
+      "type": "string",
+      "enum": ["APPROVE", "REJECT", "WATCHLIST"]
+    },
+    "governance_rejection_reasons": {
+      "type": "array",
+      "items": { "type": "string" }
+    }
+  },
+  "additionalProperties": true
+}
