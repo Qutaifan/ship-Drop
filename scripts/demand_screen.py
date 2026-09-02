@@ -97,15 +97,20 @@ def analyze_dataset(entries):
 
 
 def fetch_youtube_results(query, max_results=25):
-    """Runs yt-dlp via CLI to fetch video metadata."""
-    if not shutil.which("yt-dlp"):
-        raise SystemExit(
-            "yt-dlp is not installed or not in PATH.\n"
-            "Install it via: pip install yt-dlp (or test with --fixture / --selftest)."
-        )
+    """Runs yt-dlp via CLI or python module to fetch video metadata."""
+    if shutil.which("yt-dlp"):
+        base_cmd = ["yt-dlp"]
+    else:
+        try:
+            import yt_dlp
+            base_cmd = [sys.executable, "-m", "yt_dlp"]
+        except ImportError:
+            raise SystemExit(
+                "yt-dlp is not installed or not in PATH.\n"
+                "Install it via: pip install yt-dlp (or test with --fixture / --selftest)."
+            )
 
-    cmd = [
-        "yt-dlp",
+    cmd = base_cmd + [
         f"ytsearch{max_results}:{query}",
         "--flat-playlist",
         "--dump-json",
