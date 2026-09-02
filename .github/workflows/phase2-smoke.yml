@@ -3,7 +3,11 @@ name: Phase 2 Smoke Tests
 on:
   push:
     branches: [ main ]
+  # ready_for_review is not in the default set (opened, synchronize, reopened),
+  # so a pull request taken out of draft would otherwise merge with no check
+  # having run against it.
   pull_request:
+    types: [opened, synchronize, reopened, ready_for_review]
   workflow_dispatch:
 
 jobs:
