@@ -120,6 +120,61 @@ def check_record(path: Path) -> list[str]:
     return problems
 
 
+# Extraction methods that are the pipeline restating its own parse rather than an
+# independent observation of the market. A record whose only price support carries
+# one of these has asserted a retail price and then cited itself as the source.
+SELF_REPORTED_EXTRACTION = {"scout_bot_scan", "catalog_screen"}
+
+
+def check_price_provenance(path: Path) -> list[str]:
+    """Whether gross_selling_price is supported by the record's own evidence.
+
+    Reconciliation proves a record is internally consistent. It cannot tell whether
+    the retail price at the top of the model is a researched number or one the
+    ingestion path invented — and a fabricated retail reconciles perfectly, because
+    every figure below it is derived from the same fabrication.
+
+    Both Phase 2 staging candidates carry gross_selling_price 69.99 while their own
+    competitor_evidence records 24.99 and 29.99, the researched retail. That is the
+    defect this catches: a price the record's own evidence contradicts.
+    """
+    data = json.loads(path.read_text(encoding="utf-8"))
+    econ = data.get("unit_economics")
+    if not isinstance(econ, dict):
+        return []
+    gsp = econ.get("gross_selling_price")
+    if gsp is None:
+        return []
+
+    evidence = data.get("competitor_evidence") or []
+    priced = [e for e in evidence if isinstance(e.get("observed_price"), (int, float))]
+    if not priced:
+        return [f"gross_selling_price {gsp:.2f} has no competitor evidence to support it"]
+
+    prices = [e["observed_price"] for e in priced]
+    low, high = min(prices), max(prices)
+    problems = []
+
+    if gsp < low - TOLERANCE or gsp > high + TOLERANCE:
+        observed = ", ".join(f"{x:.2f}" for x in sorted(prices))
+        problems.append(
+            f"gross_selling_price {gsp:.2f} is outside the range its own evidence "
+            f"observes ({observed}) — the record contradicts its source"
+        )
+
+    independent = [
+        e for e in priced
+        if e.get("extraction_method") not in SELF_REPORTED_EXTRACTION
+    ]
+    if not independent:
+        methods = sorted({str(e.get("extraction_method")) for e in priced})
+        problems.append(
+            f"no independent price evidence: only {', '.join(methods)} — "
+            f"the record is its own source"
+        )
+    return problems
+
+
 def main() -> int:
     if not CANDIDATES_DIR.is_dir():
         print(f"missing {CANDIDATES_DIR.relative_to(ROOT).as_posix()}/")
@@ -133,12 +188,20 @@ def main() -> int:
     debt_now_clean: list[str] = []
     clean = 0
     known_bad = 0
+    contradicted: list[str] = []
+    self_sourced: list[str] = []
 
     for path in records:
         data = json.loads(path.read_text(encoding="utf-8"))
         cid = data.get("candidate_id", path.stem)
         problems = check_record(path)
         overstated += sum(1 for p in problems if "overstated" in p)
+
+        for note in check_price_provenance(path):
+            if "contradicts its source" in note or "no competitor evidence" in note:
+                contradicted.append(f"{cid}: {note}")
+            else:
+                self_sourced.append(cid)
 
         if not problems:
             clean += 1
@@ -165,6 +228,20 @@ def main() -> int:
               f"figure. Errors that all run in the profitable direction are a broken "
               f"formula, not scattered typos — see reports/2026-08-30-sweep-audit.md "
               f"for the same pattern in demand data.")
+
+    if contradicted:
+        print(f"\n  Price provenance — {len(contradicted)} record(s) contradict their own evidence:")
+        for note in contradicted:
+            marker = "DEBT" if note.split(":")[0] in KNOWN_DEBT else "ERROR"
+            print(f"  [{marker}] {note}")
+            if marker == "ERROR":
+                failures.append(note.split(":")[0])
+
+    if self_sourced:
+        print(f"\n  [NOTE] {len(self_sourced)} of {len(records)} record(s) have no independent "
+              f"price evidence — the ingestion path recorded its own parse as the\n"
+              f"         corroborating competitor. A retail price sourced this way "
+              f"reconciles perfectly and still means nothing.")
 
     for cid in debt_now_clean:
         failures.append(cid)

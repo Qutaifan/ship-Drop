@@ -49,6 +49,7 @@ class DSAAdIngestionPipeline:
 
         competitor_evidence: List[Dict[str, Any]] = []
         observed_prices: List[float] = []
+        skipped_no_price = 0
 
         for ad in raw_ads:
             body = ad.get("ad_creative_bodies", [""])[0] if ad.get("ad_creative_bodies") else ""
@@ -56,8 +57,15 @@ class DSAAdIngestionPipeline:
             caption = ad.get("ad_creative_link_captions", [""])[0] if ad.get("ad_creative_link_captions") else ""
             full_text = f"{title} {caption} {body}"
 
+            # An ad whose creative carries no parseable price is evidence of a
+            # competitor, not of a price. It used to default to 69.99, which put a
+            # fabricated figure into competitor_evidence and dragged the median
+            # toward the placeholder. Drop the ad from the price sample instead.
             extracted = cls.extract_price(full_text)
-            price_val = extracted["price"] if extracted else 69.99  # Fallback within target band
+            if not extracted:
+                skipped_no_price += 1
+                continue
+            price_val = extracted["price"]
             observed_prices.append(price_val)
 
             page_name = ad.get("page_name") or ad.get("page_id") or "Unknown Advertiser"
@@ -89,10 +97,11 @@ class DSAAdIngestionPipeline:
             })
 
         # Calculate price statistics
+        # None, not a placeholder: no priced ad means no observed market price.
         median_price = (
             round(sorted(observed_prices)[len(observed_prices) // 2], 2)
             if observed_prices
-            else 69.99
+            else None
         )
 
         # Saturation categorization per PROTOCOL-01
@@ -121,6 +130,7 @@ class DSAAdIngestionPipeline:
             "total_active_ads": len(raw_ads),
             "sustained_30d_ads": sustained_ads,
             "median_competitor_price": median_price,
+            "ads_without_parseable_price": skipped_no_price,
             "dsa_demand_multiplier": demand_multiplier,
             "demand_side_pressure_score": pressure_score,
             "competitor_evidence": competitor_evidence,

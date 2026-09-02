@@ -16,6 +16,8 @@ class ScoutBot:
 
     def __init__(self, store: Optional[Store] = None):
         self.store = store or Store()
+        # (filename, reason) for dossiers this scan refused to ingest.
+        self.skipped: List[tuple[str, str]] = []
 
     def discover_from_markdown(self, file_path: Path) -> Optional[Dict[str, Any]]:
         """Parses an existing candidate or product markdown dossier into structured JSON."""
@@ -70,9 +72,17 @@ class ScoutBot:
             if ship_match:
                 shipping = float(ship_match.group(1))
 
-        # Default fallback unit economics if not fully specified in raw markdown
+        # A dossier with no parseable retail price cannot produce unit economics.
+        # This used to fall back to 29.99/69.90, which silently fabricated the one
+        # figure the whole margin model is built on: every downstream contribution,
+        # CPA and gate verdict inherited an invented number and read as researched.
+        # Skip the dossier and say so instead — see
+        # reports/2026-09-02-founder-decision-matrix.md sec. 3.1.
         if retail <= 0.0:
-            retail = 29.99 if currency == "USD" else 69.90
+            self.skipped.append(
+                (file_path.name, "no retail price found; refusing to invent one")
+            )
+            return None
         if cost <= 0.0:
             cost = round(retail * 0.25, 2)
         if shipping <= 0.0:
@@ -403,8 +413,14 @@ class ScoutBot:
         return data
 
     def scan_all_existing(self) -> List[Dict[str, Any]]:
-        """Scans docs/candidates, products/, and runs catalog discovery."""
+        """Scans docs/candidates, products/, and runs catalog discovery.
+
+        Dossiers that cannot yield a real retail price are skipped rather than
+        ingested on invented economics; `self.skipped` records why, so a caller
+        can report the gap instead of it passing as a clean scan.
+        """
         discovered = []
+        self.skipped = []
         candidates_dir = ROOT / "docs" / "candidates"
         if candidates_dir.exists():
             for f in candidates_dir.glob("*.md"):

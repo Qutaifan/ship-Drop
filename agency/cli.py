@@ -81,6 +81,11 @@ def cmd_scan(store: Store, args: argparse.Namespace) -> None:
 
     discovered = scout.scan_all_existing()
     print(f"✅ Discovered & Normalized {len(discovered)} product candidates into store.\n")
+    if scout.skipped:
+        print(f"  ⚠️  Skipped {len(scout.skipped)} dossier(s) — no economics ingested:")
+        for name, reason in scout.skipped:
+            print(f"    - {name}: {reason}")
+        print()
     for c in discovered:
         print(f"  - [{c['candidate_id']}] {c['product_name']} ({c['market_config_id']}) -> Status: {c['status']}")
 

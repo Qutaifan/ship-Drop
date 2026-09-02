@@ -46,13 +46,77 @@ def econ(**overrides):
     return base
 
 
-def write_record(directory, candidate_id, economics):
+def write_record(directory, candidate_id, economics, competitor_evidence=None):
     path = Path(directory) / f"{candidate_id}.json"
-    path.write_text(
-        json.dumps({"candidate_id": candidate_id, "unit_economics": economics}),
-        encoding="utf-8",
-    )
+    body = {"candidate_id": candidate_id, "unit_economics": economics}
+    if competitor_evidence is not None:
+        body["competitor_evidence"] = competitor_evidence
+    path.write_text(json.dumps(body), encoding="utf-8")
     return path
+
+
+def evidence(price, method="meta-ad-library-dsa-api"):
+    return {
+        "source_url": "https://example.com/ad",
+        "competitor_name": "A Competitor",
+        "observed_price": price,
+        "currency": "USD",
+        "extraction_method": method,
+        "confidence": "medium",
+    }
+
+
+class PriceProvenance(unittest.TestCase):
+    """A fabricated retail price reconciles perfectly — every figure below it is
+    derived from the same fabrication. Only its provenance gives it away."""
+
+    def test_price_supported_by_evidence_reports_nothing(self):
+        with tempfile.TemporaryDirectory() as d:
+            p = write_record(d, "supported", econ(),
+                             [evidence(27.99), evidence(31.50)])
+            self.assertEqual(vce.check_price_provenance(p), [])
+
+    def test_price_above_all_observed_evidence_is_caught(self):
+        # The live defect: gross_selling_price 69.99 against evidence of 24.99.
+        with tempfile.TemporaryDirectory() as d:
+            p = write_record(d, "placeholder", econ(gross_selling_price=69.99),
+                             [evidence(24.99)])
+            problems = vce.check_price_provenance(p)
+            self.assertTrue(any("contradicts its source" in x for x in problems))
+
+    def test_price_below_all_observed_evidence_is_caught(self):
+        with tempfile.TemporaryDirectory() as d:
+            p = write_record(d, "too-low", econ(gross_selling_price=5.00),
+                             [evidence(24.99)])
+            self.assertTrue(any("contradicts its source" in x
+                                for x in vce.check_price_provenance(p)))
+
+    def test_price_inside_the_observed_range_is_accepted(self):
+        with tempfile.TemporaryDirectory() as d:
+            p = write_record(d, "inside", econ(gross_selling_price=29.99),
+                             [evidence(24.99), evidence(34.99)])
+            self.assertEqual(vce.check_price_provenance(p), [])
+
+    def test_record_with_no_price_evidence_is_caught(self):
+        with tempfile.TemporaryDirectory() as d:
+            p = write_record(d, "unsupported", econ(), [])
+            self.assertTrue(any("no competitor evidence" in x
+                                for x in vce.check_price_provenance(p)))
+
+    def test_self_reported_evidence_is_not_independent_support(self):
+        # scout_bot writing its own parse back as a "competitor" is not evidence.
+        with tempfile.TemporaryDirectory() as d:
+            p = write_record(d, "self-sourced", econ(gross_selling_price=29.99),
+                             [evidence(29.99, method="scout_bot_scan")])
+            self.assertTrue(any("its own source" in x
+                                for x in vce.check_price_provenance(p)))
+
+    def test_one_independent_source_is_enough(self):
+        with tempfile.TemporaryDirectory() as d:
+            p = write_record(d, "mixed", econ(gross_selling_price=29.99),
+                             [evidence(29.99, method="scout_bot_scan"),
+                              evidence(29.99)])
+            self.assertEqual(vce.check_price_provenance(p), [])
 
 
 class Recompute(unittest.TestCase):
