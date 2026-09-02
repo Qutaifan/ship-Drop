@@ -42,11 +42,15 @@ jobs:
       - name: Run unit test suite
         run: python -m unittest discover -s tests -t . -p "test_*.py"
 
+      # node_modules/ is committed to this repository and `npm ci` rewrites parts
+      # of it (LICENSE line endings, file modes), so it is excluded. The guard is
+      # about the test run touching workspace state — data/, config/, products/ —
+      # not about dependency install.
       - name: Fail if the test run modified tracked files
         run: |
-          if ! git diff --quiet; then
+          if ! git diff --quiet -- . ':(exclude)node_modules'; then
             echo "The test run modified tracked files:"
-            git diff --stat
+            git diff --stat -- . ':(exclude)node_modules'
             exit 1
           fi
 
