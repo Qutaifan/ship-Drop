@@ -1,0 +1,81 @@
+name: Phase 2 Smoke Tests
+
+on:
+  push:
+    branches: [ main ]
+  # ready_for_review is not in the default set (opened, synchronize, reopened),
+  # so a pull request taken out of draft would otherwise merge with no check
+  # having run against it.
+  pull_request:
+    types: [opened, synchronize, reopened, ready_for_review]
+  workflow_dispatch:
+
+jobs:
+  smoke:
+    runs-on: ubuntu-latest
+    env:
+      DB_PATH: data/dropship.db
+      SAMPLE_CANDIDATE: cand-cj-sku-magnetic-cord-6p
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: '3.11'
+
+      - name: Install dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install -r requirements.txt
+          npm ci
+
+      - name: Validate schemas
+        run: python scripts/validate_phase0_schemas.py
+
+      - name: Reconcile candidate unit economics
+        run: python scripts/validate_candidate_economics.py
+
+      # -t . matters: it makes unittest import `tests` as a package so
+      # tests/__init__.py runs and redirects writes away from the working tree.
+      - name: Run unit test suite
+        run: python -m unittest discover -s tests -t . -p "test_*.py"
+
+      # node_modules/ is committed to this repository and `npm ci` rewrites parts
+      # of it (LICENSE line endings, file modes), so it is excluded. The guard is
+      # about the test run touching workspace state — data/, config/, products/ —
+      # not about dependency install.
+      - name: Fail if the test run modified tracked files
+        run: |
+          if ! git diff --quiet -- . ':(exclude)node_modules'; then
+            echo "The test run modified tracked files:"
+            git diff --stat -- . ':(exclude)node_modules'
+            exit 1
+          fi
+
+      - name: Run Phase 2 smoke script
+        id: smoke
+        run: |
+          mkdir -p artifacts
+          python scripts/smoke_phase2.py > artifacts/smoke.out 2>&1 || echo "SMOKE_FAILED"
+          if grep -q "SMOKE TEST PASSED" artifacts/smoke.out; then
+            echo "smoke=passed" >> $GITHUB_OUTPUT
+          else
+            echo "smoke=failed" >> $GITHUB_OUTPUT
+            exit 1
+          fi
+
+      - name: Upload artifacts on success
+        if: steps.smoke.outputs.smoke == 'passed'
+        uses: actions/upload-artifact@v4
+        with:
+          name: smoke-success
+          path: artifacts/smoke.out
+
+      - name: Upload artifacts on failure
+        if: failure()
+        uses: actions/upload-artifact@v4
+        with:
+          name: smoke-failure-logs
+          path: artifacts

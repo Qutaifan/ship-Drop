@@ -1,0 +1,29 @@
+{
+  "$schema": "../../schemas/evidence.schema.json",
+  "evidence_id": "sample-demand-001",
+  "candidate_id": "sample-candidate",
+  "market_config_id": "us-pilot",
+  "collected_at": "2026-09-01T00:00:00Z",
+  "collected_by": "dropship-research",
+  "source": {
+    "name": "Sample public source",
+    "url": "https://example.com/sample-product",
+    "method": "manual_entry",
+    "access_type": "public",
+    "account_risk": "none"
+  },
+  "evidence_type": "demand",
+  "confidence": "low",
+  "summary": "Schema fixture only; not real market evidence.",
+  "raw_observations": [
+    {
+      "label": "sample_metric",
+      "value": "fixture",
+      "observed_at": "2026-09-01T00:00:00Z"
+    }
+  ],
+  "limitations": [
+    "Fixture used only to verify schema validation."
+  ],
+  "artifact_paths": []
+}

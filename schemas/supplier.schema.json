@@ -1,0 +1,74 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://dropship.local/schemas/supplier.schema.json",
+  "title": "Dropship Supplier Profile & Evaluation",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "supplier_id",
+    "supplier_name",
+    "platform",
+    "warehouse_country",
+    "origin_country",
+    "reliability_rating",
+    "dispute_rate_percent",
+    "typical_lead_days",
+    "shipping_tiers",
+    "eu_anti_deminimis_ready",
+    "us_domestic_stock",
+    "score",
+    "updated_at"
+  ],
+  "properties": {
+    "$schema": {"type": "string"},
+    "version": {"type": "string", "default": "1.0.0"},
+    "supplier_id": {"type": "string", "pattern": "^[a-z0-9][a-z0-9_-]*$"},
+    "supplier_name": {"type": "string", "minLength": 1},
+    "platform": {
+      "type": "string",
+      "enum": ["cjdropshipping", "ebay", "aliexpress", "temu", "domestic_warehouse", "other"]
+    },
+    "warehouse_country": {"type": "string", "pattern": "^[A-Z]{2}$"},
+    "origin_country": {"type": "string", "pattern": "^[A-Z]{2}$"},
+    "reliability_rating": {"type": "number", "minimum": 0, "maximum": 5},
+    "dispute_rate_percent": {"type": "number", "minimum": 0, "maximum": 100},
+    "typical_lead_days": {
+      "type": "object",
+      "required": ["processing_days", "shipping_min_days", "shipping_max_days"],
+      "properties": {
+        "processing_days": {"type": "integer", "minimum": 0},
+        "shipping_min_days": {"type": "integer", "minimum": 1},
+        "shipping_max_days": {"type": "integer", "minimum": 1}
+      }
+    },
+    "shipping_tiers": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": ["carrier", "service_name", "base_cost", "currency", "tracked"],
+        "properties": {
+          "carrier": {"type": "string"},
+          "service_name": {"type": "string"},
+          "base_cost": {"type": "number", "minimum": 0},
+          "currency": {"type": "string", "pattern": "^[A-Z]{3}$"},
+          "tracked": {"type": "boolean"}
+        }
+      }
+    },
+    "eu_anti_deminimis_ready": {"type": "boolean"},
+    "us_domestic_stock": {"type": "boolean"},
+    "score": {
+      "type": "object",
+      "required": ["total", "fulfillment_speed", "cost_competitiveness", "reliability", "compliance"],
+      "properties": {
+        "total": {"type": "number", "minimum": 0, "maximum": 100},
+        "fulfillment_speed": {"type": "number", "minimum": 0, "maximum": 100},
+        "cost_competitiveness": {"type": "number", "minimum": 0, "maximum": 100},
+        "reliability": {"type": "number", "minimum": 0, "maximum": 100},
+        "compliance": {"type": "number", "minimum": 0, "maximum": 100}
+      }
+    },
+    "notes": {"type": "string"},
+    "updated_at": {"type": "string", "format": "date-time"}
+  }
+}

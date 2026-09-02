@@ -1,0 +1,46 @@
+{
+  "dashboard_id": "hermes-phase5-economic-optimizer",
+  "title": "Hermes Phase-5 Autonomous Economic Optimization Cockpit",
+  "version": "1.0.0",
+  "theme": "obsidian-dark",
+  "refresh_rate_sec": 60,
+  "widgets": [
+    {
+      "id": "global_portfolio_kpis",
+      "type": "metric_cards",
+      "title": "Portfolio Macro Economics",
+      "metrics": [
+        "portfolio_monthly_gross_revenue",
+        "portfolio_monthly_net_margin",
+        "portfolio_average_stability",
+        "blended_cogs_multiple"
+      ]
+    },
+    {
+      "id": "dynamic_pricing_grid",
+      "type": "data_table",
+      "title": "Rule-Based Dynamic Pricing & Elasticity Matrix",
+      "columns": [
+        "product_name",
+        "current_retail",
+        "optimized_retail",
+        "unit_margin",
+        "cogs_multiple",
+        "elasticity_demand_ratio"
+      ]
+    },
+    {
+      "id": "demand_inventory_radar",
+      "type": "gauge_chart",
+      "title": "Demand Runway & Reorder Trigger Points",
+      "fields": ["daily_demand_units", "weekly_demand_units", "reorder_point_units", "inventory_runway_days"]
+    },
+    {
+      "id": "negotiation_scenarios",
+      "type": "scenario_comparison",
+      "title": "Supplier Volume-Tier Cost Reduction Curves",
+      "tiers": ["TIER_1_ON_DEMAND", "TIER_2_COMMITTED_BUFFER", "TIER_3_DOMESTIC_PRESTOCK", "TIER_4_WHOLESALE_SCALE"],
+      "metrics": ["discount_percent", "target_unit_cost", "annual_savings"]
+    }
+  ]
+}

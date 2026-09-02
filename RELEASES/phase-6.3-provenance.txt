@@ -1,0 +1,43 @@
+Phase 6.3 Release v1.0.0-alpha — Cryptographic Provenance Record
+============================================================
+Generated via Hermes orchestration on 2026-09-01.
+
+1. GIT PROVENANCE
+-----------------
+Branch:                 release/phase-6.3
+Tag name:               v1.0.0-alpha
+Milestone:              Phase-6.3 Autonomous Storefront Sync + Hermes Desktop Bridge + ORION Market Research Agent
+
+2. CRITICAL ARTIFACTS (SHA-256)
+------------------------------------------------------------
+agency/bots/orion_bot.py                       : 6b083435819330944672ddd6b9aa1032e2eddb6e755255476a218fdb71ecbfae
+schemas/orion_evaluation.schema.json           : 0ec42ad099fb64aa5b8e33e96021c89b838cc5e9559c5d083818e38d727bca45
+agency/ingestion/medusa_storefront_sync.py     : 298ce8c1a4feed145520296271f1b82389735456c20579e0a0d4c82c61309f48
+agency/ingestion/stripe_telemetry_ingestion.py : 203bee50043bac99aba1ea1345076d59af488082260662d515a815a5fdb9f96b
+agency/ingestion/umami_telemetry_ingestion.py  : 54d6d7511a4918d1e2fcf69b6f5deac75760ecfcfa77e23114a72d73dc765955
+docs/hermes-v1-architecture-whitepaper.md      : 84ce0ec7d5d26aa5988d7653ec8cdbb7b602225d646155e1865e2bc94c47bab6
+docs/hermes-desktop-ui-spec.md                 : dc9589d1502476e8a4a35ea6f58b73f27f83a2d59be1c54b2d18721c5b8b98b0
+
+3. TEST VERIFICATION
+--------------------
+Suite:     npm test & python -m unittest discover tests
+Result:    87/87 tests PASS (0 failures, 0 errors)
+          Phase 0 schema validation: PASS
+          Workspace validation:      PASS (0 errors, 0 warnings, 4 pre-existing notes)
+          Phase 2 smoke checks:      PASS
+
+4. PIPELINE CAPABILITIES DELIVERED
+----------------------------------
+- Pipe 1: Meta Ad Library DSA API Competitor Ingestion & Price Anchoring
+- Pipe 2: CJdropshipping Domestic Live Stock & Volatility Ingestion
+- Pipe 3: Medusa v2 Headless Storefront Sync with Cent Conversion & EU AI Act Disclosures
+- Pipe 4: Stripe Sandbox Webhooks & Umami Cookieless Telemetry with Empirical Elasticity
+- Agent ORION: Market Research Agent with deterministic formulas, normalization, and governance gates
+- Hermes Desktop: Cockpit UI Scaffolding & Zero-SaaS Telemetry Bridge (13 REST endpoints)
+- Synthetic Buyer Journey: 8-Step reproducible checkout narrative with HMAC provenance
+
+5. SIGN-OFF
+------------
+Recorded by: Hermes-Ecom autonomous agent
+Orchestrator session: default profile
+Founder Sovereign: Ahmad

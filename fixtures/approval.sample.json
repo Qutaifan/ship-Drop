@@ -1,0 +1,26 @@
+{
+  "$schema": "../schemas/approval.schema.json",
+  "version": "1.0.0",
+  "approval_id": "appr-20260901-test-launch-01",
+  "action": "test_campaign_launch",
+  "object_id": "candidate-us-2026-09-01-magnetic-cable-organizer",
+  "requested_by": "trader_bot",
+  "approved_by": "Ahmad",
+  "approved_at": "2026-09-01T05:00:00Z",
+  "status": "APPROVED",
+  "scope": {
+    "market_config_id": "us-pilot",
+    "candidate_id": "candidate-us-2026-09-01-magnetic-cable-organizer",
+    "max_budget": 350.0,
+    "currency": "USD"
+  },
+  "constraints": [
+    "Daily spend capped at $50.00",
+    "Stop immediately if CPA > $15.00",
+    "US domestic fulfillment only",
+    "Creative hooks must follow approved brief"
+  ],
+  "idempotency_key": "appr:us-pilot:magnetic-cable-organizer:v1",
+  "expires_at": "2026-09-15T00:00:00Z",
+  "verification_hash": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+}

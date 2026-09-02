@@ -1,0 +1,139 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://dropship.local/schemas/market-config.schema.json",
+  "title": "Dropship Market Configuration",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "market_config_id",
+    "market_type",
+    "currency",
+    "fulfillment_region",
+    "returns_region",
+    "advertising_region",
+    "target_delivery_days",
+    "tax_model",
+    "live_risk_limits"
+  ],
+  "properties": {
+    "$schema": {"type": "string"},
+    "market_config_id": {
+      "type": "string",
+      "pattern": "^[a-z0-9][a-z0-9_-]*$"
+    },
+    "market_type": {
+      "type": "string",
+      "enum": ["US", "EU"]
+    },
+    "primary_country": {
+      "type": "string",
+      "pattern": "^[A-Z]{2}$"
+    },
+    "primary_region": {
+      "type": "string",
+      "enum": ["EU"]
+    },
+    "launch_countries": {
+      "type": "array",
+      "items": {
+        "type": "string",
+        "pattern": "^[A-Z]{2}$"
+      },
+      "minItems": 1,
+      "uniqueItems": true
+    },
+    "currency": {
+      "type": "string",
+      "pattern": "^[A-Z]{3}$"
+    },
+    "tax_model": {
+      "type": "string",
+      "enum": ["destination_sales_tax", "destination_vat"]
+    },
+    "vat_model": {
+      "type": "string",
+      "enum": ["destination_vat"]
+    },
+    "ioss_required": {
+      "type": "string",
+      "enum": ["not_applicable", "conditional", "required"]
+    },
+    "fulfillment_region": {
+      "type": "string",
+      "pattern": "^([A-Z]{2}|EU)$"
+    },
+    "returns_region": {
+      "type": "string",
+      "pattern": "^([A-Z]{2}|EU)$"
+    },
+    "advertising_region": {
+      "type": "string",
+      "pattern": "^([A-Z]{2}|EU)$"
+    },
+    "target_delivery_days": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["min", "max"],
+      "properties": {
+        "min": {"type": "integer", "minimum": 1},
+        "max": {"type": "integer", "minimum": 1}
+      }
+    },
+    "ai_disclosure_policy": {
+      "type": "string",
+      "enum": ["not_applicable", "article_50_brand_policy", "platform_policy_only"]
+    },
+    "live_risk_limits": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "live_spend_allowed",
+        "live_order_submission_allowed",
+        "live_storefront_publish_allowed",
+        "live_customer_messaging_allowed"
+      ],
+      "properties": {
+        "live_spend_allowed": {"type": "boolean"},
+        "live_order_submission_allowed": {"type": "boolean"},
+        "live_storefront_publish_allowed": {"type": "boolean"},
+        "live_customer_messaging_allowed": {"type": "boolean"}
+      }
+    }
+  },
+  "allOf": [
+    {
+      "if": {"properties": {"market_type": {"const": "US"}}},
+      "then": {
+        "required": ["primary_country"],
+        "properties": {
+          "primary_country": {"const": "US"},
+          "currency": {"const": "USD"},
+          "tax_model": {"const": "destination_sales_tax"},
+          "fulfillment_region": {"const": "US"},
+          "returns_region": {"const": "US"},
+          "advertising_region": {"const": "US"},
+          "ioss_required": {"const": "not_applicable"},
+          "ai_disclosure_policy": {"enum": ["not_applicable", "platform_policy_only"]}
+        },
+        "not": {"required": ["primary_region"]}
+      }
+    },
+    {
+      "if": {"properties": {"market_type": {"const": "EU"}}},
+      "then": {
+        "required": ["primary_region", "launch_countries", "vat_model", "ioss_required", "ai_disclosure_policy"],
+        "properties": {
+          "primary_region": {"const": "EU"},
+          "currency": {"const": "EUR"},
+          "tax_model": {"const": "destination_vat"},
+          "vat_model": {"const": "destination_vat"},
+          "fulfillment_region": {"const": "EU"},
+          "returns_region": {"const": "EU"},
+          "advertising_region": {"const": "EU"},
+          "ai_disclosure_policy": {"const": "article_50_brand_policy"}
+        },
+        "not": {"required": ["primary_country"]}
+      }
+    }
+  ]
+}

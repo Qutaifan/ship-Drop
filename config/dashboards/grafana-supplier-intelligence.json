@@ -1,0 +1,215 @@
+{
+  "annotations": {
+    "list": []
+  },
+  "editable": true,
+  "fiscalYearStartMonth": 0,
+  "graphTooltip": 0,
+  "id": null,
+  "links": [],
+  "liveNow": false,
+  "panels": [
+    {
+      "collapsed": false,
+      "gridPos": {"h": 1, "w": 24, "x": 0, "y": 0},
+      "id": 1,
+      "title": "Phase 2: Supplier Reality & Stability Overview",
+      "type": "row"
+    },
+    {
+      "datasource": "SQLite-Dropship",
+      "fieldConfig": {
+        "defaults": {
+          "color": {"mode": "thresholds"},
+          "mappings": [],
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {"color": "red", "value": null},
+              {"color": "yellow", "value": 0.70},
+              {"color": "green", "value": 0.85}
+            ]
+          },
+          "unit": "none",
+          "min": 0,
+          "max": 1
+        }
+      },
+      "gridPos": {"h": 6, "w": 6, "x": 0, "y": 1},
+      "id": 2,
+      "options": {
+        "colorMode": "value",
+        "graphMode": "area",
+        "justifyMode": "auto",
+        "orientation": "auto",
+        "reduceOptions": {
+          "calcs": ["mean"],
+          "fields": "",
+          "values": false
+        },
+        "textMode": "auto"
+      },
+      "pluginVersion": "10.0.0",
+      "targets": [
+        {
+          "rawSql": "SELECT json_extract(data, '$.stability_score') as stability_score FROM supplier_verifications ORDER BY verified_at_unix DESC LIMIT 100;",
+          "refId": "A"
+        }
+      ],
+      "title": "Median Supplier Stability Score",
+      "type": "stat"
+    },
+    {
+      "datasource": "SQLite-Dropship",
+      "fieldConfig": {
+        "defaults": {
+          "color": {"mode": "palette-classic"},
+          "unit": "short"
+        }
+      },
+      "gridPos": {"h": 6, "w": 6, "x": 6, "y": 1},
+      "id": 3,
+      "options": {
+        "legend": {"displayMode": "list", "placement": "bottom", "showLegend": true},
+        "pieType": "donut"
+      },
+      "targets": [
+        {
+          "rawSql": "SELECT status, count(*) as count FROM supplier_verifications GROUP BY status;",
+          "refId": "A"
+        }
+      ],
+      "title": "Supplier Verification Status Breakdown",
+      "type": "piechart"
+    },
+    {
+      "datasource": "SQLite-Dropship",
+      "fieldConfig": {
+        "defaults": {
+          "color": {"mode": "thresholds"},
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {"color": "green", "value": null},
+              {"color": "yellow", "value": 1},
+              {"color": "red", "value": 5}
+            ]
+          }
+        }
+      },
+      "gridPos": {"h": 6, "w": 6, "x": 12, "y": 1},
+      "id": 4,
+      "options": {
+        "colorMode": "value",
+        "graphMode": "none",
+        "reduceOptions": {"calcs": ["lastNotNull"]}
+      },
+      "targets": [
+        {
+          "rawSql": "SELECT count(*) FROM signals WHERE signal_id LIKE 'sig-supplier-drift-%' AND approval_status = 'PENDING_FOUNDER_REVIEW';",
+          "refId": "A"
+        }
+      ],
+      "title": "Pending Supplier Drift Alerts",
+      "type": "stat"
+    },
+    {
+      "datasource": "SQLite-Dropship",
+      "fieldConfig": {
+        "defaults": {
+          "color": {"mode": "thresholds"},
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {"color": "red", "value": null},
+              {"color": "green", "value": 0.80}
+            ]
+          },
+          "unit": "percentunit"
+        }
+      },
+      "gridPos": {"h": 6, "w": 6, "x": 18, "y": 1},
+      "id": 5,
+      "options": {
+        "colorMode": "value",
+        "reduceOptions": {"calcs": ["mean"]}
+      },
+      "targets": [
+        {
+          "rawSql": "SELECT json_extract(data, '$.verification_confidence') as confidence FROM supplier_verifications;",
+          "refId": "A"
+        }
+      ],
+      "title": "Average Supplier API Confidence",
+      "type": "stat"
+    },
+    {
+      "collapsed": false,
+      "gridPos": {"h": 1, "w": 24, "x": 0, "y": 7},
+      "id": 6,
+      "title": "Margin Reconciliation & Landed Cost Delta",
+      "type": "row"
+    },
+    {
+      "datasource": "SQLite-Dropship",
+      "fieldConfig": {
+        "defaults": {
+          "color": {"mode": "palette-classic"},
+          "unit": "currencyUSD"
+        }
+      },
+      "gridPos": {"h": 8, "w": 12, "x": 0, "y": 8},
+      "id": 7,
+      "options": {
+        "legend": {"displayMode": "list", "placement": "bottom"},
+        "tooltip": {"mode": "single"}
+      },
+      "targets": [
+        {
+          "rawSql": "SELECT candidate_id, json_extract(data, '$.verified_product_cost') - json_extract(data, '$.quoted_product_cost') as price_drift_usd, json_extract(data, '$.verified_shipping_cost') - json_extract(data, '$.quoted_shipping_cost') as shipping_drift_usd FROM supplier_verifications ORDER BY verified_at_unix DESC LIMIT 25;",
+          "refId": "A"
+        }
+      ],
+      "title": "Sourcing & Freight Cost Drift per Candidate ($)",
+      "type": "barchart"
+    },
+    {
+      "datasource": "SQLite-Dropship",
+      "fieldConfig": {
+        "defaults": {
+          "color": {"mode": "thresholds"},
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {"color": "blue", "value": null}
+            ]
+          },
+          "unit": "short"
+        }
+      },
+      "gridPos": {"h": 8, "w": 12, "x": 12, "y": 8},
+      "id": 8,
+      "options": {
+        "legend": {"displayMode": "list", "placement": "bottom"}
+      },
+      "targets": [
+        {
+          "rawSql": "SELECT datetime((verified_at_unix / 3600) * 3600, 'unixepoch') as time_bucket, count(*) as verifications_count FROM supplier_verifications GROUP BY time_bucket ORDER BY time_bucket DESC LIMIT 24;",
+          "refId": "A"
+        }
+      ],
+      "title": "Verification Audit Throughput (Hourly)",
+      "type": "timeseries"
+    }
+  ],
+  "refresh": "1m",
+  "schemaVersion": 38,
+  "style": "dark",
+  "tags": ["dropship", "supplier-intelligence", "hermes"],
+  "time": {"from": "now-24h", "to": "now"},
+  "timepicker": {"refresh_intervals": ["10s", "30s", "1m", "5m"]},
+  "timezone": "browser",
+  "title": "Hermes - Autonomous Supplier Intelligence & Drift Monitor",
+  "uid": "hermes-supplier-kpis",
+  "version": 1
+}

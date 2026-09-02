@@ -1,0 +1,65 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://dropship.local/schemas/approval.schema.json",
+  "title": "Founder Approval Record Schema",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "approval_id",
+    "action",
+    "object_id",
+    "requested_by",
+    "approved_by",
+    "approved_at",
+    "status",
+    "scope",
+    "constraints",
+    "idempotency_key",
+    "verification_hash"
+  ],
+  "properties": {
+    "$schema": {"type": "string"},
+    "version": {"type": "string", "default": "1.0.0"},
+    "approval_id": {"type": "string", "pattern": "^appr-[a-z0-9-]+$"},
+    "action": {
+      "type": "string",
+      "enum": [
+        "ad_spend",
+        "campaign_publication",
+        "budget_increase",
+        "supplier_order_submission",
+        "public_storefront_publish",
+        "customer_messaging",
+        "price_change",
+        "new_country_launch",
+        "test_campaign_launch"
+      ]
+    },
+    "object_id": {"type": "string", "minLength": 1},
+    "requested_by": {"type": "string", "minLength": 1},
+    "approved_by": {"type": "string", "enum": ["Ahmad", "manual-ahmad"]},
+    "approved_at": {"type": "string", "format": "date-time"},
+    "status": {
+      "type": "string",
+      "enum": ["APPROVED", "REVOKED", "EXPIRED", "CONSUMED"]
+    },
+    "scope": {
+      "type": "object",
+      "required": ["market_config_id", "currency"],
+      "properties": {
+        "market_config_id": {"type": "string"},
+        "candidate_id": {"type": ["string", "null"]},
+        "max_budget": {"type": ["number", "null"], "minimum": 0},
+        "currency": {"type": "string", "pattern": "^[A-Z]{3}$"}
+      }
+    },
+    "constraints": {
+      "type": "array",
+      "items": {"type": "string"},
+      "minItems": 1
+    },
+    "idempotency_key": {"type": "string", "minLength": 5},
+    "expires_at": {"type": ["string", "null"], "format": "date-time"},
+    "verification_hash": {"type": "string", "pattern": "^[a-f0-9]{64}$"}
+  }
+}

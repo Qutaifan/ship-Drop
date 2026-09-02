@@ -1,0 +1,61 @@
+{
+  "dashboard_id": "hermes-sourcing-matrix",
+  "title": "Hermes Sourcing Intelligence & Supplier Tier Matrix",
+  "version": "1.0.0",
+  "theme": "obsidian-dark",
+  "refresh_rate_sec": 30,
+  "views": [
+    {
+      "id": "tier_distribution",
+      "type": "card_deck",
+      "title": "Active Supplier Tiers",
+      "cards": [
+        {
+          "tier": "PREFERRED_DOMESTIC",
+          "color": "#2ECC71",
+          "criteria": "Domestic origin, Stability >= 0.85, Lead time <= 5d, Margin >= $12",
+          "canary_eligible": true,
+          "action": "Primary fulfillment route"
+        },
+        {
+          "tier": "QUALIFIED_BACKUP",
+          "color": "#3498DB",
+          "criteria": "Domestic origin, Stability >= 0.75, Lead time <= 7d, Margin >= $10",
+          "canary_eligible": true,
+          "action": "Immediate fallback switch"
+        },
+        {
+          "tier": "HIGH_RISK_MONITOR",
+          "color": "#F39C12",
+          "criteria": "International transit routing, Lead time > 7d, or Stability < 0.75",
+          "canary_eligible": false,
+          "action": "Continuous drift watch; no auto-execution"
+        },
+        {
+          "tier": "REJECTED_UNVIABLE",
+          "color": "#E74C3C",
+          "criteria": "Margin compressed (<$10), Stock < 30, or Defect > 10%",
+          "canary_eligible": false,
+          "action": "Auto-disqualified; trigger SELL_KILL"
+        }
+      ]
+    },
+    {
+      "id": "scoring_formulas_reference",
+      "type": "markdown_widget",
+      "title": "Mathematical Scoring Pillars",
+      "content": "### Stability Score Formula\n`Stability = 0.4*(1 - |Drift|) + 0.3*min(1, Stock/200) + 0.2*max(0, 1 - Defect/10) + 0.1*Domestic`\n\n### Actionability Urgency Formula\n`Actionability = Severity_Weight * (1 - Stability) * 100 * (1 + |MarginDelta| / Retail)`"
+    },
+    {
+      "id": "canary_gate_safeguards",
+      "type": "status_badge_grid",
+      "title": "Canary Automation Circuit Breakers",
+      "safeguards": [
+        {"name": "Max Spend Cap", "value": "$250.00 per batch", "status": "LOCKED"},
+        {"name": "Max Canary Orders", "value": "3 test units", "status": "ENFORCED"},
+        {"name": "Min Stability Threshold", "value": "0.85", "status": "GUARDED"},
+        {"name": "Max Margin Delta Tripwire", "value": "-$2.00", "status": "ACTIVE"}
+      ]
+    }
+  ]
+}

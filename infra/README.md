@@ -64,3 +64,9 @@ Keep it on the tailnet. It is not published through the tunnel.
 - Domain not purchased (~€10/yr — the only fixed cost).
 - Payment provider not chosen; ~2.9% + fixed either way, already modelled as the 3% fee in the True Margin Matrix.
 - Supplier tooling unverified (`AGENTS.md` §7C).
+
+## New Configuration Files
+
+- `DEPLOYMENT_CHECKLIST.md` — step-by-step deployment verification for ahmad-thinkbook
+- `umami-config.md` — Umami analytics setup, tracking script integration, GDPR notes
+- `listmonk-config.md` — Listmonk email sequences, SMTP config, transactional templates, Medusa webhooks

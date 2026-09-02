@@ -1,0 +1,267 @@
+{
+  "version": "1.0.0",
+  "lastScanned": 1788214391309,
+  "projectRoot": "Q:\\world\\Projects\\Dropshiping",
+  "techStack": {
+    "languages": [
+      {
+        "name": "JavaScript/TypeScript",
+        "version": null,
+        "confidence": "high",
+        "markers": [
+          "package.json"
+        ]
+      }
+    ],
+    "frameworks": [
+      {
+        "name": "@playwright/test",
+        "version": "1.62.1",
+        "category": "testing"
+      }
+    ],
+    "packageManager": "npm",
+    "runtime": null
+  },
+  "build": {
+    "buildCommand": null,
+    "testCommand": "npm test",
+    "lintCommand": null,
+    "devCommand": null,
+    "scripts": {
+      "test": "python scripts/validate_phase0_schemas.py"
+    }
+  },
+  "conventions": {
+    "namingStyle": null,
+    "importStyle": null,
+    "testPattern": null,
+    "fileOrganization": null
+  },
+  "structure": {
+    "isMonorepo": false,
+    "workspaces": [],
+    "mainDirectories": [
+      "docs",
+      "scripts"
+    ],
+    "gitBranches": {
+      "defaultBranch": "main",
+      "branchingStrategy": null
+    }
+  },
+  "customNotes": [],
+  "directoryMap": {
+    "agency": {
+      "path": "agency",
+      "purpose": null,
+      "fileCount": 4,
+      "lastAccessed": 1788214391211,
+      "keyFiles": [
+        "DEPLOYMENT-SUMMARY.md",
+        "HANDOFF-PROTOCOL.md",
+        "README.md",
+        "US-MARKET.md"
+      ]
+    },
+    "campaigns": {
+      "path": "campaigns",
+      "purpose": null,
+      "fileCount": 1,
+      "lastAccessed": 1788214391213,
+      "keyFiles": [
+        "_TEMPLATE.md"
+      ]
+    },
+    "config": {
+      "path": "config",
+      "purpose": "Configuration files",
+      "fileCount": 0,
+      "lastAccessed": 1788214391231,
+      "keyFiles": []
+    },
+    "creative-briefs": {
+      "path": "creative-briefs",
+      "purpose": null,
+      "fileCount": 1,
+      "lastAccessed": 1788214391233,
+      "keyFiles": [
+        "_TEMPLATE.md"
+      ]
+    },
+    "docs": {
+      "path": "docs",
+      "purpose": "Documentation",
+      "fileCount": 8,
+      "lastAccessed": 1788214391233,
+      "keyFiles": [
+        "approval-policy.md",
+        "dependency-manifest.md",
+        "hermes-self-improvement-healthcheck.md",
+        "operating-contract.md",
+        "phase0-approval.md"
+      ]
+    },
+    "eCommerce-Skills": {
+      "path": "eCommerce-Skills",
+      "purpose": null,
+      "fileCount": 4,
+      "lastAccessed": 1788214391235,
+      "keyFiles": [
+        "banner.png",
+        "LICENSE",
+        "README.md"
+      ]
+    },
+    "fixtures": {
+      "path": "fixtures",
+      "purpose": "Test fixtures",
+      "fileCount": 2,
+      "lastAccessed": 1788214391236,
+      "keyFiles": [
+        "candidate.sample.json",
+        "evidence.sample.json"
+      ]
+    },
+    "infra": {
+      "path": "infra",
+      "purpose": null,
+      "fileCount": 8,
+      "lastAccessed": 1788214391236,
+      "keyFiles": [
+        "backup_r2.sh",
+        "DEPLOYMENT_CHECKLIST.md",
+        "docker-compose.yml",
+        "listmonk-config.md",
+        "Makefile"
+      ]
+    },
+    "learnings": {
+      "path": "learnings",
+      "purpose": null,
+      "fileCount": 3,
+      "lastAccessed": 1788214391238,
+      "keyFiles": [
+        "2026-08-30-initial-product-validation.md",
+        "HEURISTICS.md",
+        "_TEMPLATE.md"
+      ]
+    },
+    "products": {
+      "path": "products",
+      "purpose": null,
+      "fileCount": 8,
+      "lastAccessed": 1788214391238,
+      "keyFiles": [
+        "bamboo-drawer-organizers.md",
+        "cable-management-box.md",
+        "cloud-key-holder.md",
+        "electric-pepper-grinder.md",
+        "folding-laundry-basket.md"
+      ]
+    },
+    "QworldProjectsDropshipinglearnings": {
+      "path": "QworldProjectsDropshipinglearnings",
+      "purpose": null,
+      "fileCount": 0,
+      "lastAccessed": 1788214391239,
+      "keyFiles": []
+    },
+    "reports": {
+      "path": "reports",
+      "purpose": null,
+      "fileCount": 20,
+      "lastAccessed": 1788214391239,
+      "keyFiles": [
+        "2026-08-30-candidate-sweep-2.json",
+        "2026-08-30-candidate-sweep.md",
+        "2026-08-30-cj-mcp-cost-check.md",
+        "2026-08-30-demo-burden-screen.md",
+        "2026-08-30-leverage-and-tech.md"
+      ]
+    },
+    "schemas": {
+      "path": "schemas",
+      "purpose": "Schema definitions",
+      "fileCount": 3,
+      "lastAccessed": 1788214391240,
+      "keyFiles": [
+        "candidate.schema.json",
+        "evidence.schema.json",
+        "market-config.schema.json"
+      ]
+    },
+    "scripts": {
+      "path": "scripts",
+      "purpose": "Build/utility scripts",
+      "fileCount": 16,
+      "lastAccessed": 1788214391240,
+      "keyFiles": [
+        "ad_library.py",
+        "ad_library_us_manual.py",
+        "demand_screen.py",
+        "ebay_api.py",
+        "generate_brief.py"
+      ]
+    },
+    "suppliers": {
+      "path": "suppliers",
+      "purpose": null,
+      "fileCount": 4,
+      "lastAccessed": 1788214391241,
+      "keyFiles": [
+        "cjdropshipping.md",
+        "ebay.md",
+        "temu.md",
+        "_TEMPLATE.md"
+      ]
+    },
+    "venv": {
+      "path": "venv",
+      "purpose": null,
+      "fileCount": 2,
+      "lastAccessed": 1788214391241,
+      "keyFiles": [
+        "pyvenv.cfg"
+      ]
+    },
+    "_to_delete": {
+      "path": "_to_delete",
+      "purpose": null,
+      "fileCount": 2,
+      "lastAccessed": 1788214391242,
+      "keyFiles": []
+    },
+    "agency\\scripts": {
+      "path": "agency\\scripts",
+      "purpose": "Build/utility scripts",
+      "fileCount": 3,
+      "lastAccessed": 1788214391242,
+      "keyFiles": [
+        "deploy-agency.sh",
+        "spawn-agents.sh",
+        "validate-agency.sh"
+      ]
+    },
+    "venv\\bin": {
+      "path": "venv\\bin",
+      "purpose": "Executable scripts",
+      "fileCount": 10,
+      "lastAccessed": 1788214391250,
+      "keyFiles": [
+        "activate",
+        "activate.csh",
+        "activate.fish"
+      ]
+    },
+    "venv\\lib": {
+      "path": "venv\\lib",
+      "purpose": "Library code",
+      "fileCount": 0,
+      "lastAccessed": 1788214391250,
+      "keyFiles": []
+    }
+  },
+  "hotPaths": [],
+  "userDirectives": []
+}

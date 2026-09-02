@@ -1,0 +1,80 @@
+{
+  "$schema": "../schemas/candidate.schema.json",
+  "candidate_id": "sample-candidate",
+  "product_name": "Sample Product Fixture",
+  "market_config_id": "us-pilot",
+  "status": "VALIDATION_READY",
+  "created_at": "2026-09-01T00:00:00Z",
+  "created_by": "dropship-research",
+  "source_summary": "Schema fixture only; not a real product recommendation.",
+  "competitor_evidence": [
+    {
+      "source_url": "https://example.com/competitor-product",
+      "competitor_name": "Sample Competitor",
+      "product_url": "https://example.com/competitor-product",
+      "observed_price": 79.99,
+      "currency": "USD",
+      "extraction_method": "manual_fixture",
+      "confidence": "low"
+    }
+  ],
+  "supplier_evidence": [
+    {
+      "supplier_name": "Sample Supplier",
+      "product_url": "https://example.com/supplier-product",
+      "quoted_product_cost": 18.0,
+      "quoted_shipping_cost": 7.5,
+      "warehouse_country": "US",
+      "delivery_days_min": 3,
+      "delivery_days_max": 8,
+      "hs_code": "UNVERIFIED",
+      "origin_country": "CN",
+      "landed_cost_confidence": "low"
+    }
+  ],
+  "demand_evidence": [
+    {
+      "source": "fixtures/evidence.sample.json",
+      "signal_type": "trend",
+      "metric_name": "sample_metric",
+      "metric_value": "fixture",
+      "confidence": "low"
+    }
+  ],
+  "unit_economics": {
+    "gross_selling_price": 79.99,
+    "currency": "USD",
+    "sales_tax_liability": 0.0,
+    "discounts": 0.0,
+    "refund_allowance": 4.0,
+    "net_revenue": 75.99,
+    "product_cost": 18.0,
+    "shipping_cost": 7.5,
+    "duty": 0.0,
+    "payment_fees": 2.62,
+    "packaging_cost": 1.0,
+    "variable_support_cost": 1.0,
+    "return_allowance": 2.0,
+    "contribution_before_ads": 43.87,
+    "break_even_cpa": 43.87,
+    "target_cpa": 30.71,
+    "safety_factor": 0.7,
+    "expected_profit_per_order": 13.16
+  },
+  "compliance_unknowns": [
+    "Fixture only: HS code, product safety, supplier contract, and actual shipping quote are unverified."
+  ],
+  "recommendation": "hold",
+  "rationale": "This is a schema validation fixture, not a launch recommendation.",
+  "approval_gate": {
+    "requires_ahmad_approval": true,
+    "blocked_live_actions": [
+      "ad_spend",
+      "supplier_order_submission",
+      "public_storefront_publish",
+      "customer_messaging",
+      "price_change",
+      "new_country_launch"
+    ]
+  }
+}

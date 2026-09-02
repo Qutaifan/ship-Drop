@@ -142,7 +142,7 @@ def rw(root, rel, fn):
 def build_baseline(dst):
     """Real workspace + a complete synthetic pipeline run."""
     shutil.copytree(ROOT, dst, ignore=shutil.ignore_patterns(
-        ".git", "__pycache__", ".env"))
+        ".git", "__pycache__", ".env", ".venv", "venv", "*.pyc", "node_modules", "eCommerce-Skills", "_to_delete"))
     w(dst, f"products/{P}.md", PRODUCT)
     w(dst, f"creative-briefs/{P}.md", BRIEF)
     w(dst, f"campaigns/{P}.md", CAMPAIGN)

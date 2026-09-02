@@ -75,7 +75,75 @@ Solving both gates for maximum landed cost at 19% VAT:
 - **WEEE + battery obligations**: **FAIL / UNRESOLVED OVERHEAD** — electrical and battery-powered product requiring national WEEE registrations and battery take-back compliance across target EU member states. Fixed recurring compliance costs cannot be amortized across low test volumes.
 
 ## Verdict
-FAIL — rejected on multiple independent gates:
-1. **Demand Floor: FAIL.** Multi-pass demand screen on "electric salt and pepper grinder set" yielded 1,671 median views (below the 2,500 threshold).
-2. **Unit Economics: FAIL.** At €34.90 retail and €10.50 landed cost, net margin is €17.78, failing the 3x-COGS requirement (€31.50) and failing the 2x CAC profitability gate (median CPA €21.48 requires ~€61.74+ retail).
-3. **Return & Regulatory Overhead: FAIL.** High mechanical/electrical failure risk (Criterion 5) plus mandatory EU WEEE/battery compliance obligations create prohibitive operational friction.
+
+**FAIL — 2026-08-30, re-confirmed on a second PROTOCOL-01 review.**
+
+Three independent gates fail; any one of them is disqualifying.
+
+| Gate | Result |
+|---|---|
+| Demand floor | **FAIL** — median views far under the 2,500 threshold on both passes |
+| Unit economics | **FAIL** — net margin EUR 17.78 against the EUR 31.50 3x-COGS requirement, and under the 2x CAC gate (median CPA EUR 21.48 implies ~EUR 61.74+ retail) |
+| Return & regulatory overhead | **FAIL** — motor plus battery return risk, and per-member-state WEEE / battery registration |
+
+### Demand screen (re-run 2026-08-30)
+Query `"electric salt and pepper grinder set"`: median duration 101s, short-form 16%,
+skeptic ratio 28% (stable, drift 12%), **median views 358**, max 480,616.
+
+| Gate | Result |
+|---|---|
+| Criterion 3 — proof burden | PASS (28%, well under the 50% reject line) |
+| Demand floor — view count | **FAIL — near-zero content demand** |
+| Screen verdict | **FAIL** |
+
+The first pass on this same query recorded 1,671 median views; the re-run recorded 358.
+Both sit far below the 2,500 floor, so the verdict is unchanged either way — but a ~5x
+spread between two runs of the *same* query is itself a finding: the demand floor is
+run-sensitive, and a single reading should be reported as a range, not a point value.
+
+The product demos well; almost nobody watches content about it. Under the
+zero-budget organic model that is disqualifying, because organic reach **is** the
+entire traffic strategy. A median of 358 views means the category has no audience to
+inherit — every view would have to be manufactured from nothing.
+
+Note the max of 480,616: one outlier exists, so the ceiling is not zero. But a
+power-law tail with a 358-view median is a worse bet than a category with a live
+audience, and there is no budget to buy distribution instead.
+
+### True Margin Matrix
+Run against CJ costs: EUR 34.90 retail, EUR 10.50 landed, **net margin EUR 17.78**.
+That clears the EUR 15 floor but fails the 3x-COGS gate (needs EUR 31.50) and fails the
+2x CAC gate — median CPA EUR 21.48 implies a retail of roughly EUR 61.74 before paid
+acquisition pays for itself. Full working in the True Margin Matrix section above.
+
+The buying constraint stands: landed cost must be <= 20.3% of VAT-inclusive retail,
+i.e. EUR 7.07 at EUR 34.90. The actual landed cost of EUR 10.50 exceeds it by 48.5%.
+
+### Standing concerns (unchanged)
+- **Criterion 5 risk**: motor plus battery. A jam or a dead cell is a return, and
+  returns on a EUR 35 item destroy the economics.
+- **WEEE and battery registration**: per-member-state fixed costs if sold into the EU.
+  Under the MENA-first zero-budget model these do not apply, which was the one point
+  in the product's favour.
+
+### Verdict
+**FAIL** on demand, unit economics, and regulatory overhead. Not blocked, not
+pending — decided.
+
+## Competitor Check — DECISION RECORDED
+- **Meta developer account:** User explicitly declined ("pass"). Not being pursued.
+- **Alternative API key provided (session value):** Tested at meta developer access level — Meta Graph API returns `Invalid OAuth access token` (HTTP 400, code 190). The key format (mk_live_...) is not a Meta access token.
+- **Status:** Blocked permanently per owner decision and technical reality. This is documented rather than hidden.
+- **Impact:** PROTOCOL-01 competitor gate (5+ advertisers, 3+ aged ads) cannot be executed. This is a known and accepted limitation.
+- **Mitigation:** Proceed with other gates (demand screen PASS, margin analysis at €70+ retail, creative brief generation) using available evidence.
+
+
+## Competitor Check — API Key Test Result
+
+- **Metapi.io test with user-provided session key**: HTTP 404 Route not found
+  - The key `mk_live_188fc6bdd9cfc4d01be9ef65bb3c422021218254ac6be5aae6d4e202dbd454f8`
+    is not a valid Metapi.io API key (expected format: sk_...)
+  - Suggests the key may be for a different service or requires a different endpoint
+- **Meta Graph API test with same key**: Invalid OAuth token (as expected)
+- **Conclusion**: No valid API key available for either backend.
+- **Decision**: Competitor gate remains blocked per user's decision not to pursue Meta developer account.

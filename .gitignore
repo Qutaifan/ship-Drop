@@ -10,6 +10,22 @@ __pycache__/
 *.pyc
 .hermes-tmp*
 
+# Database & runtime stores
+*.db
+*.db-journal
+*.sqlite
+*.sqlite3
+data/*.db
+data/*.db-journal
+data/verifications/*.json
+data/audit/*.json
+data/audit/*.jsonl
+data/signals/*.json
+data/supplier_health/*.json
+data/telemetry/*.json
+data/archives/
+data/medusa_drafts/
+
 # Large raw API dumps (regenerable; keep the analysed reports, not the payloads)
 reports/*-raw.txt
 reports/cj-direct-token-*.json

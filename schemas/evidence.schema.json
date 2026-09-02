@@ -1,0 +1,93 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://dropship.local/schemas/evidence.schema.json",
+  "title": "Dropship Evidence Record",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "evidence_id",
+    "candidate_id",
+    "market_config_id",
+    "collected_at",
+    "collected_by",
+    "source",
+    "evidence_type",
+    "confidence",
+    "summary",
+    "raw_observations"
+  ],
+  "properties": {
+    "$schema": {"type": "string"},
+    "evidence_id": {"type": "string", "pattern": "^[a-z0-9][a-z0-9_-]*$"},
+    "candidate_id": {"type": "string", "pattern": "^[a-z0-9][a-z0-9_-]*$"},
+    "market_config_id": {"type": "string", "pattern": "^[a-z0-9][a-z0-9_-]*$"},
+    "collected_at": {"type": "string", "format": "date-time"},
+    "collected_by": {"type": "string", "enum": ["dropship-research", "dropship-orchestrator", "manual-ahmad"]},
+    "source": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["name", "url", "method", "access_type"],
+      "properties": {
+        "name": {"type": "string", "minLength": 1},
+        "url": {"type": "string", "minLength": 1},
+        "method": {
+          "type": "string",
+          "enum": ["web_search", "web_extract", "browser_manual", "official_api", "agent_reach_zero_config", "firecrawl_merchant_page", "file_import", "manual_entry"]
+        },
+        "access_type": {"type": "string", "enum": ["public", "authenticated_read_only", "manual_private"]},
+        "account_risk": {"type": "string", "enum": ["none", "low", "medium", "high"], "default": "none"}
+      }
+    },
+    "evidence_type": {
+      "type": "string",
+      "enum": ["competitor", "supplier", "demand", "review", "price", "compliance", "ad_library", "keyword", "other"]
+    },
+    "confidence": {"type": "string", "enum": ["low", "medium", "high"]},
+    "summary": {"type": "string", "minLength": 1},
+    "raw_observations": {
+      "type": "array",
+      "minItems": 1,
+      "items": {
+        "type": "object",
+        "additionalProperties": true,
+        "required": ["label", "value"],
+        "properties": {
+          "label": {"type": "string", "minLength": 1},
+          "value": {},
+          "unit": {"type": "string"},
+          "currency": {"type": "string", "pattern": "^[A-Z]{3}$"},
+          "observed_at": {"type": "string", "format": "date-time"}
+        }
+      }
+    },
+    "limitations": {
+      "type": "array",
+      "items": {"type": "string"},
+      "default": []
+    },
+    "artifact_paths": {
+      "type": "array",
+      "items": {"type": "string"},
+      "default": []
+    }
+  },
+  "allOf": [
+    {
+      "if": {"properties": {"source": {"properties": {"method": {"const": "agent_reach_zero_config"}}}}},
+      "then": {"properties": {"source": {"properties": {"access_type": {"const": "public"}, "account_risk": {"enum": ["none", "low"]}}}}}
+    },
+    {
+      "not": {
+        "properties": {
+          "source": {
+            "properties": {
+              "method": {"enum": ["browser_manual", "firecrawl_merchant_page"]},
+              "account_risk": {"const": "high"}
+            },
+            "required": ["method", "account_risk"]
+          }
+        }
+      }
+    }
+  ]
+}

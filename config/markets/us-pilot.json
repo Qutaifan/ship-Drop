@@ -1,0 +1,23 @@
+{
+  "$schema": "../../schemas/market-config.schema.json",
+  "market_config_id": "us-pilot",
+  "market_type": "US",
+  "primary_country": "US",
+  "currency": "USD",
+  "tax_model": "destination_sales_tax",
+  "ioss_required": "not_applicable",
+  "fulfillment_region": "US",
+  "returns_region": "US",
+  "advertising_region": "US",
+  "target_delivery_days": {
+    "min": 3,
+    "max": 8
+  },
+  "ai_disclosure_policy": "platform_policy_only",
+  "live_risk_limits": {
+    "live_spend_allowed": false,
+    "live_order_submission_allowed": false,
+    "live_storefront_publish_allowed": false,
+    "live_customer_messaging_allowed": false
+  }
+}
