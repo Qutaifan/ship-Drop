@@ -5,7 +5,7 @@
 **Review date:** 2026-09-01  
 **Prepared by:** dropship-research  
 **Approval owner:** Ahmad  
-**Status:** pending
+**Status:** approved_for_phase2_staging_only
 
 ---
 
@@ -122,8 +122,8 @@ approval_id: phase1-review-top2-candidates-001
 action: approve_phase2_test
 object_id: candidate-us-2026-09-01-magnetic-cable-organizer,candidate-us-2026-09-01-foldable-silicone-bowl
 requested_by: dropship-research
-approved_by: null
-approved_at: null
+approved_by: Ahmad
+approved_at: 2026-09-01T17:57:42+03:00
 scope:
   market_config_id: us-pilot
   candidate_id: candidate-us-2026-09-01-magnetic-cable-organizer,candidate-us-2026-09-01-foldable-silicone-bowl
@@ -144,4 +144,4 @@ expires_at: 2026-09-15T23:59:59-04:00
 
 | Role | Name | Decision | Date | Notes |
 |---|---|---|---|---|
-| Approval owner | Ahmad | Pending | — | Required before Phase 2 ad test |
+| Approval owner | Ahmad | Approved for Phase 2 staging only | 2026-09-01 | No live spend, no public publish, no supplier writes |

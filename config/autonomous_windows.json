@@ -575,6 +575,294 @@
       ],
       "status": "REVOKED",
       "cryptographic_token": "94f102e4ced235e96266143013dce50a65e383c39e39a350d5c94ba903b669f5"
+    },
+    {
+      "window_id": "win-202609011356-cd98ed",
+      "authorized_by": "Founder",
+      "granted_at": "2026-09-01T13:56:09.552765+00:00",
+      "expires_at": "2026-09-01T15:26:09.552765+00:00",
+      "duration_hours": 1.5,
+      "spend_cap": 250.0,
+      "consumed_spend": 0.0,
+      "permitted_actions": [
+        "CANARY_ORDER_DISPATCH",
+        "SUPPLIER_FAILOVER_SWITCH"
+      ],
+      "permitted_skus": [
+        "*"
+      ],
+      "status": "REVOKED",
+      "cryptographic_token": "9919854d620c37d9c3a229c779353756437ee3490c1272fa2cf1801d997748e2"
+    },
+    {
+      "window_id": "win-202609011356-b0dc79",
+      "authorized_by": "Ahmad",
+      "granted_at": "2026-09-01T13:56:11.695727+00:00",
+      "expires_at": "2026-09-01T15:56:11.695727+00:00",
+      "duration_hours": 2.0,
+      "spend_cap": 500.0,
+      "consumed_spend": 75.0,
+      "permitted_actions": [
+        "CANARY_ORDER_DISPATCH",
+        "SUPPLIER_FAILOVER_SWITCH"
+      ],
+      "permitted_skus": [
+        "*"
+      ],
+      "status": "REVOKED",
+      "cryptographic_token": "a148c9dcb3a2ed42e90c65cd2d632eadb712fd4286d875e309c931fcce22b3d4"
+    },
+    {
+      "window_id": "win-202609011433-170f7f",
+      "authorized_by": "Founder",
+      "granted_at": "2026-09-01T14:33:56.417105+00:00",
+      "expires_at": "2026-09-01T16:03:56.417105+00:00",
+      "duration_hours": 1.5,
+      "spend_cap": 250.0,
+      "consumed_spend": 0.0,
+      "permitted_actions": [
+        "CANARY_ORDER_DISPATCH",
+        "SUPPLIER_FAILOVER_SWITCH"
+      ],
+      "permitted_skus": [
+        "*"
+      ],
+      "status": "REVOKED",
+      "cryptographic_token": "bf2b3f3d1b43ffe3879006ed3498d0a281fe7074da9b75a6a07dd7932e35eb30"
+    },
+    {
+      "window_id": "win-202609011433-6e8116",
+      "authorized_by": "Ahmad",
+      "granted_at": "2026-09-01T14:33:58.730626+00:00",
+      "expires_at": "2026-09-01T16:33:58.730626+00:00",
+      "duration_hours": 2.0,
+      "spend_cap": 500.0,
+      "consumed_spend": 75.0,
+      "permitted_actions": [
+        "CANARY_ORDER_DISPATCH",
+        "SUPPLIER_FAILOVER_SWITCH"
+      ],
+      "permitted_skus": [
+        "*"
+      ],
+      "status": "REVOKED",
+      "cryptographic_token": "f3f7a2a7eaa51c7538447f0681d5d1c6f884b02f442c0d32b40f8f6cffcb5514"
+    },
+    {
+      "window_id": "win-202609011440-197f22",
+      "authorized_by": "Founder",
+      "granted_at": "2026-09-01T14:40:34.271765+00:00",
+      "expires_at": "2026-09-01T16:10:34.271765+00:00",
+      "duration_hours": 1.5,
+      "spend_cap": 250.0,
+      "consumed_spend": 0.0,
+      "permitted_actions": [
+        "CANARY_ORDER_DISPATCH",
+        "SUPPLIER_FAILOVER_SWITCH"
+      ],
+      "permitted_skus": [
+        "*"
+      ],
+      "status": "REVOKED",
+      "cryptographic_token": "a9e30888758c678e61ac58bb852ec2e5e61612319c9321299792c67d07a566d9"
+    },
+    {
+      "window_id": "win-202609011440-4256d8",
+      "authorized_by": "Ahmad",
+      "granted_at": "2026-09-01T14:40:36.457459+00:00",
+      "expires_at": "2026-09-01T16:40:36.457459+00:00",
+      "duration_hours": 2.0,
+      "spend_cap": 500.0,
+      "consumed_spend": 75.0,
+      "permitted_actions": [
+        "CANARY_ORDER_DISPATCH",
+        "SUPPLIER_FAILOVER_SWITCH"
+      ],
+      "permitted_skus": [
+        "*"
+      ],
+      "status": "REVOKED",
+      "cryptographic_token": "115de9e7999e2a1e75e5285132d372a18559921424c12924c637ab1f92943cc8"
+    },
+    {
+      "window_id": "win-202609011449-f02c99",
+      "authorized_by": "Founder",
+      "granted_at": "2026-09-01T14:49:47.611465+00:00",
+      "expires_at": "2026-09-01T16:19:47.611465+00:00",
+      "duration_hours": 1.5,
+      "spend_cap": 250.0,
+      "consumed_spend": 0.0,
+      "permitted_actions": [
+        "CANARY_ORDER_DISPATCH",
+        "SUPPLIER_FAILOVER_SWITCH"
+      ],
+      "permitted_skus": [
+        "*"
+      ],
+      "status": "REVOKED",
+      "cryptographic_token": "ef3a86149c10a95280beb46c9d087b7f59480383a938f2dcba107e84d75ca625"
+    },
+    {
+      "window_id": "win-202609011449-7cdede",
+      "authorized_by": "Ahmad",
+      "granted_at": "2026-09-01T14:49:49.776620+00:00",
+      "expires_at": "2026-09-01T16:49:49.776620+00:00",
+      "duration_hours": 2.0,
+      "spend_cap": 500.0,
+      "consumed_spend": 75.0,
+      "permitted_actions": [
+        "CANARY_ORDER_DISPATCH",
+        "SUPPLIER_FAILOVER_SWITCH"
+      ],
+      "permitted_skus": [
+        "*"
+      ],
+      "status": "REVOKED",
+      "cryptographic_token": "09faee674daf204773b2fab2937a011cc83b5fe13e9e7c6c40123a2d6ad422d8"
+    },
+    {
+      "window_id": "win-202609011456-36bb1b",
+      "authorized_by": "Founder",
+      "granted_at": "2026-09-01T14:56:01.632619+00:00",
+      "expires_at": "2026-09-01T16:26:01.632619+00:00",
+      "duration_hours": 1.5,
+      "spend_cap": 250.0,
+      "consumed_spend": 0.0,
+      "permitted_actions": [
+        "CANARY_ORDER_DISPATCH",
+        "SUPPLIER_FAILOVER_SWITCH"
+      ],
+      "permitted_skus": [
+        "*"
+      ],
+      "status": "REVOKED",
+      "cryptographic_token": "1dd67cb83ffddbd78d39799181bbff5f402f14d1b1bbf04bb467697299448b4e"
+    },
+    {
+      "window_id": "win-202609011456-ed75da",
+      "authorized_by": "Ahmad",
+      "granted_at": "2026-09-01T14:56:03.971999+00:00",
+      "expires_at": "2026-09-01T16:56:03.971999+00:00",
+      "duration_hours": 2.0,
+      "spend_cap": 500.0,
+      "consumed_spend": 75.0,
+      "permitted_actions": [
+        "CANARY_ORDER_DISPATCH",
+        "SUPPLIER_FAILOVER_SWITCH"
+      ],
+      "permitted_skus": [
+        "*"
+      ],
+      "status": "REVOKED",
+      "cryptographic_token": "f0190625ba99010608c82d7bf8ce91b3b9dab08f7d1cb4eae4bc97336a8edfba"
+    },
+    {
+      "window_id": "win-202609011458-0d53db",
+      "authorized_by": "Founder",
+      "granted_at": "2026-09-01T14:58:23.885831+00:00",
+      "expires_at": "2026-09-01T16:28:23.885831+00:00",
+      "duration_hours": 1.5,
+      "spend_cap": 250.0,
+      "consumed_spend": 0.0,
+      "permitted_actions": [
+        "CANARY_ORDER_DISPATCH",
+        "SUPPLIER_FAILOVER_SWITCH"
+      ],
+      "permitted_skus": [
+        "*"
+      ],
+      "status": "REVOKED",
+      "cryptographic_token": "882db17331144ceedff74f13dc3fd44965e2d81208ea55c107bd94e40e22471f"
+    },
+    {
+      "window_id": "win-202609011458-f7e77e",
+      "authorized_by": "Ahmad",
+      "granted_at": "2026-09-01T14:58:25.962370+00:00",
+      "expires_at": "2026-09-01T16:58:25.962370+00:00",
+      "duration_hours": 2.0,
+      "spend_cap": 500.0,
+      "consumed_spend": 75.0,
+      "permitted_actions": [
+        "CANARY_ORDER_DISPATCH",
+        "SUPPLIER_FAILOVER_SWITCH"
+      ],
+      "permitted_skus": [
+        "*"
+      ],
+      "status": "REVOKED",
+      "cryptographic_token": "d796bac9e1fa02c2def4461e1855ebbef17dcad57b0266f7c8796f3d24eb28d2"
+    },
+    {
+      "window_id": "win-202609011507-02bb6c",
+      "authorized_by": "Founder",
+      "granted_at": "2026-09-01T15:07:59.242829+00:00",
+      "expires_at": "2026-09-01T16:37:59.242829+00:00",
+      "duration_hours": 1.5,
+      "spend_cap": 250.0,
+      "consumed_spend": 0.0,
+      "permitted_actions": [
+        "CANARY_ORDER_DISPATCH",
+        "SUPPLIER_FAILOVER_SWITCH"
+      ],
+      "permitted_skus": [
+        "*"
+      ],
+      "status": "REVOKED",
+      "cryptographic_token": "0b9f8d7e3196a02aeec806f31481b1f101b00fd0e0b82869afb978c9f5a13f3c"
+    },
+    {
+      "window_id": "win-202609011508-808b7d",
+      "authorized_by": "Ahmad",
+      "granted_at": "2026-09-01T15:08:01.430135+00:00",
+      "expires_at": "2026-09-01T17:08:01.430135+00:00",
+      "duration_hours": 2.0,
+      "spend_cap": 500.0,
+      "consumed_spend": 75.0,
+      "permitted_actions": [
+        "CANARY_ORDER_DISPATCH",
+        "SUPPLIER_FAILOVER_SWITCH"
+      ],
+      "permitted_skus": [
+        "*"
+      ],
+      "status": "REVOKED",
+      "cryptographic_token": "d1e4d6b0bf9c4761cee6a274749db18333e5ba6c0fd5f77fa6c7427cd0ffd0ae"
+    },
+    {
+      "window_id": "win-202609021202-95a5a6",
+      "authorized_by": "Founder",
+      "granted_at": "2026-09-02T12:02:20.572824+00:00",
+      "expires_at": "2026-09-02T13:32:20.572824+00:00",
+      "duration_hours": 1.5,
+      "spend_cap": 250.0,
+      "consumed_spend": 0.0,
+      "permitted_actions": [
+        "CANARY_ORDER_DISPATCH",
+        "SUPPLIER_FAILOVER_SWITCH"
+      ],
+      "permitted_skus": [
+        "*"
+      ],
+      "status": "REVOKED",
+      "cryptographic_token": "e685ab7dcb6010365515caa95e8bd6a8f620caab79587330b1ce32462ae6a656"
+    },
+    {
+      "window_id": "win-202609021202-b85daa",
+      "authorized_by": "Ahmad",
+      "granted_at": "2026-09-02T12:02:22.652792+00:00",
+      "expires_at": "2026-09-02T14:02:22.652792+00:00",
+      "duration_hours": 2.0,
+      "spend_cap": 500.0,
+      "consumed_spend": 75.0,
+      "permitted_actions": [
+        "CANARY_ORDER_DISPATCH",
+        "SUPPLIER_FAILOVER_SWITCH"
+      ],
+      "permitted_skus": [
+        "*"
+      ],
+      "status": "REVOKED",
+      "cryptographic_token": "c699f9cbb8b3f829951dbf83ac03372a6ba0f37e7798ed91004e02ba66032776"
     }
   ]
 }
