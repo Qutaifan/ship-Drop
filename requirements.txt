@@ -1,0 +1,17 @@
+# Python runtime dependencies.
+#
+# Kept deliberately small — the workspace tooling in scripts/ is stdlib-only by
+# design. Everything listed here is imported unguarded by production code, so a
+# missing entry is a hard failure, not a degraded mode.
+
+# Draft 2020-12 JSON Schema validation.
+# Imported unguarded by agency/core/store.py (every Store read/write validates
+# against schemas/), scripts/validate_phase0_schemas.py, and four test modules.
+# Without it the test suite collects 19 of 92 tests and the rest error on import.
+jsonschema>=4.0
+
+# --- Optional ---------------------------------------------------------------
+# PyYAML is NOT listed as a requirement on purpose. scripts/validate_infra.py is
+# its only consumer and guards the import, downgrading its compose checks rather
+# than failing. Install it to get those checks:
+#     pip install PyYAML

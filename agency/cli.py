@@ -872,7 +872,8 @@ def cmd_governance_window(store: Store, args: argparse.Namespace) -> None:
 
     else:
         # List windows
-        windows_file = ROOT / "config" / "autonomous_windows.json"
+        from agency.config.settings import WINDOWS_FILE
+        windows_file = WINDOWS_FILE
         if windows_file.exists():
             with windows_file.open("r", encoding="utf-8") as f:
                 data = json.load(f)

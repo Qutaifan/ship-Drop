@@ -9,13 +9,38 @@ from typing import Optional
 ROOT = Path(__file__).resolve().parents[2]
 
 
+def _env_path(name: str, default: Path) -> Path:
+    """Path override from the environment, falling back to the repo layout.
+
+    Exists so a test run can be pointed at a scratch directory. Without it every
+    Store() writes into the working tree, and running the suite dirties tracked
+    files — including data/audit/audit_log.jsonl, which is a governance record.
+    Unset in normal operation, so production paths are unchanged.
+    """
+    value = os.getenv(name)
+    return Path(value).expanduser().resolve() if value else default
+
+
+# Module-level so importers resolve the same directories the Settings dataclass
+# does; its field defaults are bound once at class-definition time.
+DATA_DIR = _env_path("DROPSHIP_DATA_DIR", ROOT / "data")
+CONFIG_DIR = ROOT / "config"
+
+# config/ mixes committed configuration (markets/, feature_flags.json) with this
+# one file, which is mutable runtime state. It gets its own override so a test run
+# can redirect the state without also redirecting the config it needs to read.
+WINDOWS_FILE = _env_path("DROPSHIP_WINDOWS_FILE", CONFIG_DIR / "autonomous_windows.json")
+
+
 @dataclass(frozen=True)
 class Settings:
     # Storage & Database
     ROOT_DIR: Path = ROOT
-    DATA_DIR: Path = ROOT / "data"
-    DATABASE_PATH: Path = ROOT / "data" / "dropship.db"
+    DATA_DIR: Path = DATA_DIR
+    DATABASE_PATH: Path = DATA_DIR / "dropship.db"
     SCHEMAS_DIR: Path = ROOT / "schemas"
+    CONFIG_DIR: Path = CONFIG_DIR
+    WINDOWS_FILE: Path = WINDOWS_FILE
 
     # Governance & Execution Limits
     POLICY_LEVEL: str = os.getenv("DROPSHIP_POLICY_LEVEL", "STRICT_FOUNDER_APPROVAL")

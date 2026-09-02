@@ -14,8 +14,10 @@ from typing import Any, Dict, List, Optional
 
 from agency.core.store import Store
 
+from agency.config.settings import DATA_DIR
+
 ROOT = Path(__file__).resolve().parents[2]
-CATALOG_DIR = ROOT / "data" / "medusa_catalog"
+CATALOG_DIR = DATA_DIR / "medusa_catalog"
 
 
 class MedusaStorefrontSync:

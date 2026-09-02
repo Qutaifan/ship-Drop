@@ -4,7 +4,7 @@
   "description": "Hermes-Ecom operates in this project. Persona + protocols: see `AGENTS.md`. Portable copy-paste system prompt for other LLMs: `HERMES-PROMPT.md`.",
   "main": "index.js",
   "scripts": {
-    "test": "python scripts/validate_phase0_schemas.py && python scripts/validate_workspace.py && python -m unittest discover tests -p \"test_*.py\"",
+    "test": "python scripts/validate_phase0_schemas.py && python scripts/validate_candidate_economics.py && python scripts/validate_workspace.py && python -m unittest discover -s tests -t . -p \"test_*.py\"",
     "agency:pipeline": "python agency/run_pipeline.py",
     "agency:cli": "python agency/cli.py",
     "agency:audit": "python agency/cli.py audit",
