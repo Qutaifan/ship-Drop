@@ -11,8 +11,9 @@ from typing import Any, Dict, List, Optional
 
 from agency.core.store import Store
 
+from agency.config.settings import WINDOWS_FILE
+
 ROOT = Path(__file__).resolve().parents[2]
-WINDOWS_FILE = ROOT / "config" / "autonomous_windows.json"
 
 
 class AutonomousWindowManager:

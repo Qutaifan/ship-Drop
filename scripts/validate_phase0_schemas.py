@@ -14,6 +14,15 @@ from jsonschema import Draft202012Validator
 
 ROOT = Path(__file__).resolve().parents[1]
 
+# Directories of live records, each validated structurally against one schema.
+# Previously only the eight fixtures below were checked, so the records that
+# actually drive founder decisions were never validated by any committed tool.
+DATA_CHECKS = [
+    (ROOT / "schemas" / "candidate.schema.json", ROOT / "data" / "candidates"),
+    (ROOT / "schemas" / "supplier.schema.json", ROOT / "data" / "suppliers"),
+    (ROOT / "schemas" / "approval.schema.json", ROOT / "data" / "approvals"),
+]
+
 CHECKS = [
     (ROOT / "schemas" / "market-config.schema.json", ROOT / "config" / "markets" / "us-pilot.json"),
     (ROOT / "schemas" / "evidence.schema.json", ROOT / "fixtures" / "evidence.sample.json"),
@@ -86,10 +95,33 @@ def validate_candidate_semantics(data: dict[str, Any]) -> list[str]:
     return errors
 
 
+def validate_data_dir(schema_path: Path, directory: Path) -> tuple[list[str], list[Path]]:
+    """Validate every *.json record in a live data directory against one schema."""
+    if not directory.is_dir():
+        return [f"{directory.relative_to(ROOT).as_posix()}/: directory missing"], []
+    errors: list[str] = []
+    checked: list[Path] = []
+    for data_path in sorted(directory.glob("*.json")):
+        checked.append(data_path)
+        try:
+            errors.extend(validate_schema(schema_path, data_path))
+        except json.JSONDecodeError as exc:
+            errors.append(f"{data_path.relative_to(ROOT).as_posix()}: not valid JSON ({exc})")
+    if not checked:
+        errors.append(f"{directory.relative_to(ROOT).as_posix()}/: no records found")
+    return errors, checked
+
+
 def main() -> int:
     errors: list[str] = []
     for schema_path, data_path in CHECKS:
         errors.extend(validate_schema(schema_path, data_path))
+
+    data_checked: list[Path] = []
+    for schema_path, directory in DATA_CHECKS:
+        dir_errors, checked = validate_data_dir(schema_path, directory)
+        errors.extend(dir_errors)
+        data_checked.extend(checked)
 
     errors.extend(validate_market_semantics(load_json(ROOT / "config" / "markets" / "us-pilot.json")))
     errors.extend(validate_candidate_semantics(load_json(ROOT / "fixtures" / "candidate.sample.json")))
@@ -103,6 +135,8 @@ def main() -> int:
     print("Phase 0 schema validation PASSED")
     for _, data_path in CHECKS:
         print(f"- validated {data_path.relative_to(ROOT).as_posix()}")
+    print(f"- validated {len(data_checked)} live record(s) across "
+          f"{', '.join(d.relative_to(ROOT).as_posix() + '/' for _, d in DATA_CHECKS)}")
     return 0
 
 

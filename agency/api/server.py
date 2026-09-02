@@ -21,10 +21,29 @@ ROOT = Path(__file__).resolve().parents[2]
 
 class HermesAPIHandler(BaseHTTPRequestHandler):
     store = Store()
-    window_mgr = AutonomousWindowManager(store)
-    optimizer = GlobalPortfolioOptimizer(store)
-    rep_graph = SupplierReputationGraph(store)
-    vol_tracker = SupplierVolatilityTracker(store)
+
+    # Collaborators resolve from the *current* `store` on each access rather than
+    # capturing it at class-definition time. Bound as class attributes they each
+    # held the import-time Store, so assigning HermesAPIHandler.store — which is
+    # how the handler is pointed at a different database — moved only the
+    # endpoints using self.store directly. /telemetry/overview and
+    # /economic/portfolio go through the optimizer and so kept reading the real
+    # data directory, whatever store was injected.
+    @property
+    def window_mgr(self) -> AutonomousWindowManager:
+        return AutonomousWindowManager(self.store)
+
+    @property
+    def optimizer(self) -> GlobalPortfolioOptimizer:
+        return GlobalPortfolioOptimizer(self.store)
+
+    @property
+    def rep_graph(self) -> SupplierReputationGraph:
+        return SupplierReputationGraph(self.store)
+
+    @property
+    def vol_tracker(self) -> SupplierVolatilityTracker:
+        return SupplierVolatilityTracker(self.store)
 
     def _send_json(self, status_code: int, data: Any) -> None:
         payload = json.dumps(data, indent=2).encode("utf-8")
@@ -131,7 +150,8 @@ class HermesAPIHandler(BaseHTTPRequestHandler):
 
             # 6. Autonomous Windows Monitor
             if path == "/api/v1/governance/windows":
-                windows_file = ROOT / "config" / "autonomous_windows.json"
+                from agency.config.settings import WINDOWS_FILE
+                windows_file = WINDOWS_FILE
                 wins = []
                 if windows_file.exists():
                     with windows_file.open("r", encoding="utf-8") as f:
