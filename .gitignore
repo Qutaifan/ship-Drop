@@ -29,3 +29,8 @@ data/medusa_drafts/
 # Large raw API dumps (regenerable; keep the analysed reports, not the payloads)
 reports/*-raw.txt
 reports/cj-direct-token-*.json
+
+# Vendored third-party skill library (nexscope-ai/eCommerce-Skills, MIT).
+# Has its own .git, so git records it as a bare gitlink with no .gitmodules —
+# a broken submodule that clones as an empty directory. Keep it out of the repo.
+eCommerce-Skills/
