@@ -47,19 +47,25 @@ TOLERANCE = 0.02
 # Findings are written up in reports/2026-09-02-founder-decision-matrix.md.
 # Do not add to this list to make a failure go away — fix the record.
 KNOWN_DEBT: dict[str, str] = {
-    # The two candidates queued for Phase 2 staging approval. gross_selling_price
-    # is a $69.99 placeholder in both; docs/candidates/*.md record the researched
-    # retail as $24.99 and $29.99. refund_allowance is also missing from
-    # net_revenue, and target_cpa is not subtracted from
-    # expected_profit_per_order — so per-order profit reads ~3.5x its own model.
-    "candidate-us-2026-09-01-magnetic-cable-organizer": "placeholder $69.99 retail; contribution and per-order profit overstated",
-    "candidate-us-2026-09-01-foldable-silicone-bowl": "placeholder $69.99 retail; contribution and per-order profit overstated",
-    # return_allowance is not subtracted from contribution_before_ads.
-    "candidate-us-2026-09-01-magnetic-wristband": "return_allowance omitted from contribution (+1.81)",
-    "candidate-us-2026-09-01-portable-neck-fan": "return_allowance omitted from contribution (+1.65)",
-    "cand-cj-sku-magnetic-cord-6p": "net_revenue states 23.99 against components giving 61.99",
+    # Fixed 2026-09-03: retail corrected to researched $24.99/$29.99, payment_fees
+    # recalculated for the new price, expected_profit_per_order corrected to
+    # subtract target_cpa. Both now reconcile and fail the CAC gate honestly
+    # rather than passing on placeholder numbers. See
+    # reports/2026-09-02-founder-decision-matrix.md §3 for the original finding.
+    #   candidate-us-2026-09-01-magnetic-cable-organizer
+    #   candidate-us-2026-09-01-foldable-silicone-bowl
+    # Fixed 2026-09-03: return_allowance was omitted from contribution on both.
+    #   candidate-us-2026-09-01-magnetic-wristband  (+1.81 → corrected, HOLD stands)
+    #   candidate-us-2026-09-01-portable-neck-fan    (+1.65 → corrected, still fails CAC gate)
+    # Fixed 2026-09-03: net_revenue was contaminated with a value from the
+    # sibling magnetic-cable-organizer record, break_even_cpa did not match
+    # contribution_before_ads, and expected_profit_per_order did not subtract
+    # target_cpa. Corrected figures still clear every gate.
+    #   cand-cj-sku-magnetic-cord-6p
+    #
     # Records migrated from the EU products/*.md workspace, which stored one
     # net-margin figure rather than the US contribution model's cost lines.
+    # Left as-is: EU market is not in current scope.
     "cloud-key-holder": "legacy EU record; single net-margin figure, not the US cost model",
     "led-sunset-lamp": "legacy EU record; single net-margin figure, not the US cost model",
     "portable-neck-fan": "legacy EU record; single net-margin figure, not the US cost model",

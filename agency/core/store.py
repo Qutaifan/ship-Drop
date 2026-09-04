@@ -423,6 +423,26 @@ class Store:
                 results.append(data)
         return sorted(results, key=lambda x: x.get("created_at", ""), reverse=True)
 
+    def has_active_duplicate_signal(self, candidate_id: str, signal_type: str, statement: str) -> bool:
+        """True if an unresolved signal already exists for this exact (candidate, type,
+        condition). Added 2026-09-03: tracker_bot had no idempotency key and emitted a
+        fresh signal per scan for an unchanged condition, producing ~50% duplicate
+        PENDING_FOUNDER_REVIEW signals (see reports/2026-09-03-signal-store-reconciliation.md).
+
+        'Active' means the founder hasn't resolved it yet — PENDING_FOUNDER_REVIEW or
+        QUARANTINE_48H. APPROVED/REJECTED/EXECUTED signals are resolved history and
+        should not block re-detection of a condition that reoccurs after a fix.
+        """
+        active_statuses = {"PENDING_FOUNDER_REVIEW", "QUARANTINE_48H"}
+        for sig in self.list_signals(signal_type=signal_type):
+            if sig.get("candidate_id") != candidate_id:
+                continue
+            if sig.get("approval_status") not in active_statuses:
+                continue
+            if sig.get("hypothesis", {}).get("statement") == statement:
+                return True
+        return False
+
     def delete_signal(self, signal_id: str) -> bool:
         with self._get_connection() as conn:
             cur = conn.execute("DELETE FROM signals WHERE signal_id = ?", (signal_id,))

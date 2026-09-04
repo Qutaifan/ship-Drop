@@ -154,6 +154,12 @@ class SupplierVolatilityTracker:
         pname = cand.get("product_name", candidate_id)
         now_str = datetime.now(timezone.utc).strftime("%Y%m%d%H%M%S")
         sig_id = f"sig-supplier-switch-{candidate_id[:16]}-{now_str}"
+        statement = f"Automated governance switch: Primary supplier {degraded_supplier_id} degraded ({reason}). Rerouting allocation to qualified backup {replacement_supplier_id}."
+
+        # Idempotency: skip if an unresolved signal for this exact condition already
+        # exists. Added 2026-09-03 — see Store.has_active_duplicate_signal.
+        if self.store.has_active_duplicate_signal(candidate_id, "SUPPLIER_SWITCH", statement):
+            return {}
 
         signal_payload: Dict[str, Any] = {
             "$schema": "../schemas/trade_signal.schema.json",
@@ -176,7 +182,7 @@ class SupplierVolatilityTracker:
                 "predicted_cpa": 15.0,
                 "predicted_net_margin": 14.5,
                 "target_ad_budget": 0.0,
-                "statement": f"Automated governance switch: Primary supplier {degraded_supplier_id} degraded ({reason}). Rerouting allocation to qualified backup {replacement_supplier_id}.",
+                "statement": statement,
             },
             "action_plan": {
                 "recommended_action": f"Switch primary fulfillment from {degraded_supplier_id} to {replacement_supplier_id} to protect margin and delivery SLA.",

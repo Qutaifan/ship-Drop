@@ -58,6 +58,15 @@ class SupplierReplacementEngine:
         if not alternatives:
             # Emergency: No qualified fallback available! Pause listing to protect budget.
             pause_sig_id = f"sig-pause-{candidate_id[:16]}-{datetime.datetime.now(datetime.timezone.utc).strftime('%Y%m%d%H%M%S')}"
+            pause_statement = f"EMERGENCY PAUSE: Primary supplier {p_id} degraded ({lifecycle['reason']}) and zero qualified backup domestic suppliers exist."
+            # Idempotency: added 2026-09-03, see Store.has_active_duplicate_signal.
+            if self.store.has_active_duplicate_signal(candidate_id, "SELL_KILL", pause_statement):
+                return {
+                    "candidate_id": candidate_id,
+                    "primary_supplier_id": p_id,
+                    "switch_triggered": False,
+                    "message": "Emergency pause condition unchanged; an unresolved signal for it already exists.",
+                }
             pause_signal = {
                 "$schema": "../schemas/trade_signal.schema.json",
                 "signal_id": pause_sig_id,
@@ -67,7 +76,7 @@ class SupplierReplacementEngine:
                 "target_market": "US",
                 "confidence": "high",
                 "scores": {"profit_score": 0.0, "risk_score": 90.0, "trend_score": 50.0, "opportunity_score": 20.0, "supplier_score": 10.0},
-                "hypothesis": {"predicted_ctr_percent": 0.0, "predicted_cvr_percent": 0.0, "predicted_cpa": 0.0, "predicted_net_margin": 0.0, "target_ad_budget": 0.0, "statement": f"EMERGENCY PAUSE: Primary supplier {p_id} degraded ({lifecycle['reason']}) and zero qualified backup domestic suppliers exist."},
+                "hypothesis": {"predicted_ctr_percent": 0.0, "predicted_cvr_percent": 0.0, "predicted_cpa": 0.0, "predicted_net_margin": 0.0, "target_ad_budget": 0.0, "statement": pause_statement},
                 "action_plan": {"recommended_action": "Pause active ads and freeze listings until alternative domestic source is vetted.", "execution_tier": 1, "creative_hooks": [], "suggested_supplier_id": None, "contingency_rule": "Maintain pause until manual supplier verification completes."},
                 "approval_status": "PENDING_FOUNDER_REVIEW",
                 "approval_id": None,
@@ -99,6 +108,21 @@ class SupplierReplacementEngine:
         # Emit formal switch proposal
         now_str = datetime.datetime.now(datetime.timezone.utc).strftime("%Y%m%d%H%M%S")
         switch_sig_id = f"sig-supplier-switch-{candidate_id[:16]}-{now_str}"
+        switch_statement = (
+            f"Automated replacement: Primary supplier {p_id} fell to state {lifecycle['state']} ({lifecycle['reason']}). "
+            f"Rerouting fulfillment to {repl_id} (Stability: {best_replacement['stability_score']:.2f}, Margin: ${new_margin:.2f}, Net Delta: ${margin_delta:+.2f})."
+        )
+        # Idempotency: added 2026-09-03, see Store.has_active_duplicate_signal. If the
+        # margin figures are unchanged the statement matches exactly and this is a
+        # no-op; a materially different margin naturally produces a new statement.
+        if self.store.has_active_duplicate_signal(candidate_id, "SUPPLIER_SWITCH", switch_statement):
+            return {
+                "candidate_id": candidate_id,
+                "primary_supplier_id": p_id,
+                "replacement_supplier_id": repl_id,
+                "switch_triggered": False,
+                "message": "Switch condition unchanged; an unresolved signal for it already exists.",
+            }
         switch_signal: Dict[str, Any] = {
             "$schema": "../schemas/trade_signal.schema.json",
             "signal_id": switch_sig_id,
@@ -120,10 +144,7 @@ class SupplierReplacementEngine:
                 "predicted_cpa": 15.0,
                 "predicted_net_margin": new_margin,
                 "target_ad_budget": 0.0,
-                "statement": (
-                    f"Automated replacement: Primary supplier {p_id} fell to state {lifecycle['state']} ({lifecycle['reason']}). "
-                    f"Rerouting fulfillment to {repl_id} (Stability: {best_replacement['stability_score']:.2f}, Margin: ${new_margin:.2f}, Net Delta: ${margin_delta:+.2f})."
-                ),
+                "statement": switch_statement,
             },
             "action_plan": {
                 "recommended_action": f"Approve supplier switch from {p_id} to {repl_id} (Allocation: {new_alloc.get('strategy')}).",

@@ -91,6 +91,14 @@ class SupplierDriftDetector:
                 rec_signal_type = "SUPPLIER_SWITCH"
                 action_text = f"Review alternative fulfillment options for '{product_name}' to resolve {len(flags)} supplier drift issue(s)."
 
+            statement = f"Supplier drift detected: {' | '.join(flags)} Stability score: {latest_ver.get('stability_score')}."
+
+            # Idempotency: skip if an unresolved signal for this exact condition
+            # already exists. Without this check, an unchanged drift condition
+            # produces a fresh signal on every scan (see Store.has_active_duplicate_signal).
+            if self.store.has_active_duplicate_signal(cid, rec_signal_type, statement):
+                continue
+
             drift_signal_data: Dict[str, Any] = {
                 "$schema": "../schemas/trade_signal.schema.json",
                 "version": "1.0.0",
@@ -113,7 +121,7 @@ class SupplierDriftDetector:
                     "predicted_cpa": 15.00,
                     "predicted_net_margin": 10.00,
                     "target_ad_budget": 0.0,
-                    "statement": f"Supplier drift detected: {' | '.join(flags)} Stability score: {latest_ver.get('stability_score')}.",
+                    "statement": statement,
                 },
                 "action_plan": {
                     "execution_tier": 3,
