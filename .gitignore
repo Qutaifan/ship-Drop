@@ -4,6 +4,9 @@
 !.env.example
 infra/.env
 
+# Dependencies — reproducible via package-lock.json (npm ci)
+node_modules/
+
 # Working artifacts
 _to_delete/
 __pycache__/

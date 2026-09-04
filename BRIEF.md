@@ -1,10 +1,19 @@
 # Dropshiping — Full Project Brief
 
-**Prepared 2026-08-30 · Status: pre-launch, zero products validated, zero spend committed**
+**Originally prepared 2026-08-30 · Refreshed 2026-09-03 for the US pivot**
+
+> **This document is a historical snapshot through §7.** Sections 1–7 describe the
+> project as it stood on 2026-08-30, when it was EU-first and pre-launch. The project
+> has since pivoted to a **US-first pilot** — see `docs/operating-contract.md` and
+> `config/markets/us-pilot.json` for the current, authoritative operating state.
+> Sections 8–10 have been updated to reflect where things actually stand today;
+> everything above them is left as-written for the record.
 
 ---
 
 ## 1. What this project is
+
+*(as of 2026-08-30 — see note above)*
 
 An EU-first dropshipping operation run by an autonomous agent persona (**Hermes-Ecom**)
 against a file-based workflow. Products are screened, costed, and gated by explicit
@@ -187,15 +196,35 @@ minimum viable volume).
 
 ---
 
-## 8. Blockers — both require the owner
+## 8. Where it actually stands — updated 2026-09-03
+
+The project pivoted **EU-first → US-first**. Current authoritative state lives in
+`docs/operating-contract.md` (Phase 0, pilot market US, Ahmad as approval owner,
+all live-risk actions disabled) and `config/markets/us-pilot.json`.
+
+| | |
+|---|---|
+| Market | **US** (was EU) |
+| Candidates in the US batch | 6 (`candidate-us-2026-09-01-*`), candidate_limit 5 per contract |
+| Live spend / orders / storefront / messaging | All **disabled** by contract — Phase 0 |
+| Blocking items | Same 2 as §6 below, still open, still require the owner |
+| Signal store | 241 files, ~50% duplicate emissions, ~44 for already-dead candidates — see `reports/2026-09-03-signal-store-reconciliation.md` |
+| Open founder decisions | Tracked in ClickUp "0. Founder Decisions" and `reports/2026-09-02-founder-decision-matrix.md` |
+
+The EU candidates in §7 (and the pepper grinder) are **not currently active** — the
+pilot's candidate slots are occupied by the US batch. Nothing about the EU evidence
+is wrong; the market simply moved.
+
+## 9. Blockers — both require the owner, unchanged since §6
 
 1. **Meta developer app + identity verification.** Gates the competitor check. Takes
    days; start before it is needed.
-2. **EU-warehouse stock.** CJ's China-origin freight breaks every candidate's landed
-   cost. Either CJ EU-warehouse SKUs, or Temu V3 product-API permission (currently
-   denied for this app_key).
+2. **Warehouse-local stock.** CJ's China-origin freight breaks every candidate's landed
+   cost regardless of market. Either CJ EU-warehouse SKUs (if EU work resumes), or
+   Temu V3 product-API permission (currently denied for this app_key).
 
-Neither is a research task. Both are account creation.
+Neither is a research task. Both are account creation, and both block the US pilot
+just as they blocked the EU one — the constraint was never market-specific.
 
 ### Secondary
 
@@ -210,19 +239,31 @@ Neither is a research task. Both are account creation.
 
 ---
 
-## 9. What to do next, in order
+## 10. What to do next, in order — updated 2026-09-03
 
-1. **Create the Meta developer app** — longest lead time, blocks the most.
-2. **Find EU-warehouse SKUs on CJ in the €62–93 band.** This replaces all prior
-   candidate hunting; the old €30–45 band cannot support paid acquisition.
-3. **Test Wan 2.2 1.3B on Forge Neo.** Confirms or kills the creative-volume strategy.
-4. **Decide the testing budget deliberately** — €1,500–6,000, as the cost of the
-   experiment rather than overhead to minimise.
-5. Only then: run PROTOCOL-01 on real candidates with real costs.
+The old EU-band guidance (§6: €62–93 retail window) no longer applies directly — the
+US batch needs its own price-band and CAC-gate analysis. See
+`reports/2026-09-02-founder-decision-matrix.md` for the current, US-specific version
+of this math (P0/P1 items: two US candidates are gating on a $69.99 placeholder
+retail price and need re-pricing or re-sourcing).
+
+1. **Resolve the P0/P1 founder decisions** on the two staged US candidates — nothing
+   else in the pilot can proceed past them.
+2. **Create the Meta developer app** — longest lead time of any open item, blocks the
+   most, unchanged from the EU phase.
+3. **Secure warehouse-local stock** for the US pilot (CJ EU SKUs don't apply here;
+   needs a US-equivalent path, or Temu V3 permission).
+4. **Fix the signal store** before committing it — idempotency in `tracker_bot`,
+   re-sweep, stop generation for dead candidates.
+5. **Decide the ad-testing budget deliberately** — the €1,500–6,000 framing in §11
+   below still holds in USD-equivalent terms; it was never EU-specific.
+6. Only then: resume PROTOCOL-01 on the US candidates with corrected costs.
 
 ---
 
-## 10. Honest assessment
+## 11. Honest assessment
+
+*(as of 2026-08-30, still holds — the argument was never market-specific)*
 
 The machinery is sound and well-tested. The economics are **thin but not impossible**,
 and they only work in a narrow price band with above-median advertising performance.
@@ -236,4 +277,5 @@ one new ad per $3,000 of monthly spend. This project pays electricity. At a 5% h
 stays at five a month, the free stack is irrelevant and the economics do not work.
 
 The decision in front of the owner is not technical. It is whether to commit
-€1,500–6,000 to a search process whose machinery is now built and validated.
+€1,500–6,000 (or USD-equivalent, for the US pilot) to a search process whose machinery
+is now built and validated.
