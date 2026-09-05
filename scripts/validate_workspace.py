@@ -120,14 +120,19 @@ def check_products(root):
             note(f"products/{s}.md — margin math skipped, unit economics incomplete")
             continue
 
+        # Detect currency context
+        is_gcc = any(c in t.upper() for c in ("SAR", "AED", "KSA", "UAE", "QAR", "BHD", "OMR"))
+        profit_floor = 60.0 if is_gcc else 15.0
+        retail_floor = 80.0 if is_gcc else 20.0
+        curr_label = "SAR/AED " if is_gcc else "€"
+
         # VAT is remitted to the state, so margin runs on the ex-VAT amount.
-        # Omitting it overstates EU margin by roughly the VAT rate.
         vat = money(field(t, "VAT rate"))
         if vat is None:
-            err(f"products/{s}.md has no VAT rate — margin cannot be computed for an "
-                f"EU sale, and omitting it overstates net margin by ~{0.19/1.19:.0%}")
+            err(f"products/{s}.md has no VAT rate — margin cannot be computed without "
+                f"destination tax rate (e.g. 0.15 for KSA, 0.05 for UAE, 0.19 for EU)")
             continue
-        if vat > 1:                      # tolerate "19" as well as "0.19"
+        if vat > 1:                      # tolerate "15" as well as "0.15"
             vat = vat / 100.0
         duty = money(field(t, "Import duty per unit")) or 0.0
 
@@ -142,19 +147,20 @@ def check_products(root):
                 f"- cogs {cogs:.2f} - 3% fee {fee:.2f})")
 
         gate_3x = net >= 3 * cogs
-        gate_15 = net > 15
-        should = "PASS" if (gate_3x and gate_15) else "FAIL"
+        gate_floor = net > profit_floor
+        should = "PASS" if (gate_3x and gate_floor) else "FAIL"
         if verdict and verdict != should:
             reasons = []
             if not gate_3x:
                 reasons.append(f"net {net:.2f} < 3x COGS ({3*cogs:.2f})")
-            if not gate_15:
-                reasons.append(f"net {net:.2f} not > 15")
+            if not gate_floor:
+                reasons.append(f"net {net:.2f} not > {profit_floor}")
             err(f"products/{s}.md verdict {verdict} contradicts margin rules "
                 f"(should be {should}: {'; '.join(reasons) or 'both gates met'})")
 
-        if retail < 20:
-            err(f"products/{s}.md retail {retail:.2f} is under the €20 floor "
+        if retail < retail_floor:
+            floor_str = f"SAR {retail_floor:.0f}" if is_gcc else f"€{retail_floor:.0f}"
+            err(f"products/{s}.md retail {retail:.2f} is under the {floor_str} floor "
                 f"(AGENTS.md §4A.4 — cannot sustain paid ads)")
 
         comps = money(field(t, "Competitors running ads (need 5–10)")) \

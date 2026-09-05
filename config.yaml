@@ -1,7 +1,7 @@
 mcp_servers:
   cj-dropshipping:
     command: "node"
-    args: ["Q:/cj-mcp-server/dist/mcp-server/index.cjs"]
+    args: ["C:/Users/Ahmad/Desktop/Dropshipping/cj-mcp-server/dist/mcp-server/index.cjs"]
     env:
       CJ_ENV: "production"
       CJ_LOG_LEVEL: "info"

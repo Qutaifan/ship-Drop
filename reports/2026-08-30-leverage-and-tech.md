@@ -70,7 +70,7 @@ genuine edge this project has.
 | # | Upgrade | Mechanism | Effect on CAC | Cost |
 |---|---|---|---|---|
 | 1 | **Creative volume: 40+/month** | Raises the odds of finding a top-decile hook | Largest single lever — a 2x CTR hook halves CAC | Electricity |
-| 2 | **Wan 2.2 (1.3B), Apache 2.0** | Video gen that fits 8GB / RTX 4060 | Enables #1 at zero marginal cost | Free |
+| 2 | **Veo 3.1 Lite (Pro sub) for test phase** | 100 clips/month, ~$0.20/clip, native audio | Enables #1 at the cost of the existing €19.99 Pro subscription, no new vendor | €0 incremental |
 | 3 | **AI creative, sub-$100 AOV only** | +12% CTR (1.08% vs 0.96%), −15% CPC on Meta | CAC €21.48 → €19.18 | Free |
 | 4 | **Hook-rate instrumentation** | 3-sec views ÷ impressions; <25% fix, 30–40% good, 40%+ elite | Makes #1 measurable instead of guesswork | Free |
 | 5 | **Page speed / CVR work** | CVR is the other multiplier in the denominator | +10% CVR → CAC €19.18 → €17.44 | Free (Medusa/Next.js already chosen) |
@@ -88,10 +88,8 @@ speed **+€31.12** → with a top-decile hook **+€38.79**.
 
 ## 5. Verification needed before relying on any of this
 
-1. **Wan 2.2 1.3B on Forge Neo is unproven here.** Wan 2.2 TI2V-5B was already found
-   unsupported by this fork (VAE architecture mismatch) and removed. The 1.3B variant
-   may or may not load. Test before planning around it.
-2. The AI-vs-human creative study is vendor-adjacent (AdCreative.ai benchmark). Treat
+1. **Wan 2.2 path is closed on this laptop** — VRAM ceiling prevents local Wan 2.2 1.3B (which needs 8GB at minimum, plus extra for VAE). Removed from the pipeline 2026-08-30; Veo Lite/Fast on Pro covers the test phase at ~$0.20–$0.40/clip. The earlier "Wan 2.2 TI2V-5B VAE mismatch" finding is now academic.
+2. The AI-vs-human creative study is vendor-adjacent (AdCreative.ai benchmark). Treat the +12% CTR as directional, not settled.
    the +12% CTR as directional, not settled.
 3. Hit rates come from accounts spending far more than this project will. A 3.8% rate
    at sub-$10k spend is the relevant figure, and it may be optimistic at €0 history.
